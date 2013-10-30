@@ -1,7 +1,7 @@
 import xbmc
 
 import xbmcaddon
-
+import xbmcgui
  
 
 __addon__       = xbmcaddon.Addon(id='plugin.video.yogaglo')
@@ -18,8 +18,14 @@ text = "This is some text"
 
 time = 5000  # ms
 
+line1 = "This is my first XBMC plugin"
+line2 = "Going to do some YOGA with YogaGlo"
+line3 = "showing this message in python modules"
  
 
+dialog = xbmcgui.Dialog()
+dialog.ok(__addonname__, line1, line2, line3) 
 xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(title, text, time, __icon__))
+
 
 
