@@ -6,6 +6,8 @@ import xbmcgui
 
 __addon__       = xbmcaddon.Addon(id='plugin.video.yogaglo')
 
+pluginName = "plugin.video.yogaglo"
+__addon__       = xbmcaddon.Addon(id=pluginName)
 __addonname__   = __addon__.getAddonInfo('name')
 
 __icon__        = __addon__.getAddonInfo('icon')
