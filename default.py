@@ -1,11 +1,9 @@
 import xbmc
-
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
  
-
-__addon__       = xbmcaddon.Addon(id='plugin.video.yogaglo')
+HANDLE = int(sys.argv[1])
 
 pluginName = "plugin.video.yogaglo"
 __addon__       = xbmcaddon.Addon(id=pluginName)
