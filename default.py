@@ -103,6 +103,23 @@ def buildYogaCategoryMenu(params):
         itemList.append((url, li, True))
     addDirs(itemList)
     xbmcplugin.endOfDirectory(HANDLE)
+def getInputParameters(url):
+    parameters = {}
+    try:
+        qm, params = url.split('?')
+    except:
+        params = None
+        
+    if params != None:
+        splitParameters = params.split('&')
+        for pair in splitParameters:
+            if len(pair) > 0:
+                twoValues = pair.split('=')
+                param = twoValues[0]
+                value = urllib.unquote(urllib.unquote_plus(twoValues[1])).decode('utf-8')
+                parameters[param] = value
+    print "Parameters are %s" % parameters
+    return parameters
 
 def getNavigationInformation(category):
     menuList = []
@@ -170,6 +187,7 @@ def addDirs(linkList):
     print "Trying to add dirs %s, %s" % (HANDLE, len(linkList))
     return xbmcplugin.addDirectoryItems(HANDLE, linkList, len(linkList))
 
+parameters = getInputParameters(sys.argv[2])
 
 if not 'yogaCategory' in parameters:
     print "Building the Top Menu"
