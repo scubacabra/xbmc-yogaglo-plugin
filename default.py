@@ -19,10 +19,8 @@ BASEURL = "http://www.yogaglo.com"
 pluginName = "plugin.video.yogaglo"
 __addon__       = xbmcaddon.Addon(id=pluginName)
 __addonname__   = __addon__.getAddonInfo('name')
-
 __icon__        = __addon__.getAddonInfo('icon')
 
- 
 def playYogaGloVideo(parameters):
     vidPage = parameters['yogagloUrl']
     if not vidPage[0] == "/":
@@ -108,6 +106,7 @@ def buildYogaCategoryMenu(params):
         itemList.append((url, li, True))
     addDirs(itemList)
     xbmcplugin.endOfDirectory(HANDLE)
+    
 def getYogaGloCategory(category):
     if category == "Teacher":
         return 2
@@ -158,9 +157,6 @@ def getTeacherImageUrl(teacherUrl):
     imgUrl = soup.find('section', attrs = {'class': 'cf'}).div.img
     return BASEURL + urllib.quote(imgUrl['src'].encode('utf-8'))
 
-line1 = "This is my first XBMC plugin"
-line2 = "Going to do some YOGA with YogaGlo"
-line3 = "showing this message in python modules"
 def openUrl(url):
     #create an opener
     opener = urllib2.build_opener()
@@ -192,9 +188,7 @@ def openUrl(url):
     # Return html
     return htmlData
 
-dialog = xbmcgui.Dialog()
-dialog.ok(__addonname__, line1, line2, line3) 
-xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(title, text, time, __icon__))
+   
 def addDir(url, listItem, isFolder):
     return xbmcplugin.addDirectoryItem(HANDLE, url, listItem, isFolder)
 
