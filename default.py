@@ -27,11 +27,47 @@ def buildTopLevelMenu():
     addDirs(itemList)
     xbmcplugin.endOfDirectory(HANDLE)
 
-title = "Hello World"
+def buildYogaCategoryMenu(params):
+    itemList = []
+    menu = getNavigationInformation(params['yogaCategory'])
+    print menu
+    for item in menu:
+        try:
+            title, ygUrl, imageUrl = item
+        except ValueError:
+            title, ygUrl = item
+            imageUrl = None
+        callbackParams = { 'yogaCategory' : params['yogaCategory'], 'yogagloUrl' : ygUrl }
+        url = PLUGIN + "?" + urllib.urlencode(callbackParams)
+        if imageUrl is not None:
+            li = xbmcgui.ListItem(label=title, iconImage=imageUrl)
+        else:
+            li = xbmcgui.ListItem(label=title, iconImage="Default.png")
+        itemList.append((url, li, True))
+    addDirs(itemList)
+    xbmcplugin.endOfDirectory(HANDLE)
 
-text = "This is some text"
+def getNavigationInformation(category):
+    menuList = []
+    yogaglo = openUrl(BASEURL)
+    soup = BeautifulSoup(''.join(yogaglo))
+    navInfo = soup.find('li', id=category).findAll('a')
+    for info in navInfo:
+        infoTitle = info.contents[0]
+        infoUrl = urllib.quote(info['href'].encode('utf-8'))
+        menu = (infoTitle, infoUrl)
+        if category == "2": #Looking at teachers, need images
+           teacherImageUrl = getTeacherImageUrl(infoUrl)
+           menu = menu + (teacherImageUrl, )
+        menuList.append(menu)
+    return menuList
 
-time = 5000  # ms
+def getTeacherImageUrl(teacherUrl):
+    url = BASEURL + urllib.quote(teacherUrl.encode('utf-8'))
+    teachercontent = openUrl(url)
+    soup = BeautifulSoup(teachercontent)
+    imgUrl = soup.find('section', attrs = {'class': 'cf'}).div.img
+    return BASEURL + urllib.quote(imgUrl['src'].encode('utf-8'))
 
 line1 = "This is my first XBMC plugin"
 line2 = "Going to do some YOGA with YogaGlo"
@@ -81,3 +117,6 @@ def addDirs(linkList):
 if not 'yogaCategory' in parameters:
     print "Building the Top Menu"
     buildTopLevelMenu()
+else:
+    if not 'yogagloUrl' in parameters:
+        buildYogaCategoryMenu(parameters)
