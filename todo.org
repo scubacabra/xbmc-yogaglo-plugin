@@ -1,0 +1,16 @@
+* version 0.1
+  initial cut, no authentication, poorly written python code, just trying to learn.
+  Can browse to all videos and play the clips -- need authenticaiton to get full videos
+** Bugs
+   There are some bugs regarding the sites get class description url 
+   -- "/_ajax_get_class_description.php?"
+   it doesn't return a title for some videos so I'm getting in index out of range error
+*** Menu items affected by this
+**** Level 1
+**** Level 3
+**** 5 min
+**** 10 min
+**** 75 min
+**** 120 min
+** Fixes
+   Just try except and if an error comes up give it a default name of its style of yoga
