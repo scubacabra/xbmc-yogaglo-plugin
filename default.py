@@ -56,8 +56,11 @@ def buildClassesMenu(parameters):
         id = yogaClass['id']
         desc = getClassDescription(id)
         soup = BeautifulSoup(desc)
-        title = soup.b.contents[0]
         style = soup.i.nextSibling
+        try:
+            title = soup.b.contents[0]
+        except:
+            title = style #TODO something else here, like color it to make it different
         level = soup.findAll('i')[1].nextSibling
         teacher = soup.findAll('i')[2].nextSibling
         fullDesc = soup.findAll('br')[-1].nextSibling
