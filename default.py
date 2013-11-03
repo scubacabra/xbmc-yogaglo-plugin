@@ -15,6 +15,38 @@ __addonname__   = __addon__.getAddonInfo('name')
 __icon__        = __addon__.getAddonInfo('icon')
 
  
+def buildClassesMenu(parameters):
+    itemList = []
+    url = BASEURL + parameters['yogagloUrl']
+    page = openUrl(url)
+    soup = BeautifulSoup(page)
+    classes = soup.find('div', attrs = {'class': re.compile("^main_layout")}).findAll('section')[-1].findAll('div', id=re.compile('^[0-9]+'))
+    for yogaClass in classes:
+        classUrl = yogaClass.a['href']
+        classCoverPic = yogaClass.a.img['src'].encode('utf-8')
+        classLength = yogaClass.findAll('div')[3].contents
+        id = yogaClass['id']
+        desc = getClassDescription(id)
+        soup = BeautifulSoup(desc)
+        title = soup.b.contents[0]
+        style = soup.i.nextSibling
+        level = soup.findAll('i')[1].nextSibling
+        teacher = soup.findAll('i')[2].nextSibling
+        fullDesc = soup.findAll('br')[-1].nextSibling
+        classInfo = (classUrl, classCoverPic, classLength, title, style, level, teacher, fullDesc)
+        print classInfo
+        
+        li = xbmcgui.ListItem(label=title, label2=fullDesc, iconImage=classCoverPic)#, path=streamurl)
+        li.setInfo('video', {'title': title,
+                             'label': "Style: " + style + " Level: " + level,
+                             'plot': fullDesc})
+        li.setProperty('IsPlayable', 'true')
+        callbackParams = { 'yogaCategory' : parameters['yogaCategory'], 'yogagloUrl' : classUrl, 'play': 1}
+        callBackUrl = PLUGIN + "?" + urllib.urlencode(callbackParams)
+        itemList.append((callBackUrl, li, False))
+    addDirs(itemList)
+    xbmcplugin.endOfDirectory(HANDLE)
+
     
 def buildTopLevelMenu():
     itemList = []
@@ -120,3 +152,6 @@ if not 'yogaCategory' in parameters:
 else:
     if not 'yogagloUrl' in parameters:
         buildYogaCategoryMenu(parameters)
+    else:
+        if not 'play' in parameters:
+            buildClassesMenu(parameters)
