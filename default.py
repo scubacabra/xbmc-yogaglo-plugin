@@ -103,6 +103,16 @@ def buildYogaCategoryMenu(params):
         itemList.append((url, li, True))
     addDirs(itemList)
     xbmcplugin.endOfDirectory(HANDLE)
+def getYogaGloCategory(category):
+    if category == "Teacher":
+        return 2
+    elif category == "Style":
+        return 3
+    elif category == "Level":
+        return 4
+    elif category == "Duration":
+        return 5
+
 def getInputParameters(url):
     parameters = {}
     try:
