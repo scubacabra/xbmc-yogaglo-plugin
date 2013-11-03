@@ -33,6 +33,13 @@ def playYogaGloVideo(parameters):
     liz.setProperty('SWFPlayer', swfUrl);
     xbmcplugin.setResolvedUrl(HANDLE,True, liz) 
       
+def getClassDescription(classId):
+    ajaxUrl = "/_ajax_get_class_description.php?"
+    query = { 'id' : classId, 't': 0 }
+    url = BASEURL + ajaxUrl + urllib.urlencode(query)
+    desc = openUrl(url)
+    return desc
+    
 def buildClassesMenu(parameters):
     itemList = []
     url = BASEURL + parameters['yogagloUrl']
