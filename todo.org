@@ -6,11 +6,20 @@
    -- "/_ajax_get_class_description.php?"
    it doesn't return a title for some videos so I'm getting in index out of range error
 *** Menu items affected by this
-**** Level 1
-**** Level 3
-**** 5 min
-**** 10 min
-**** 75 min
-**** 120 min
+**** DONE Level 1
+     CLOSED: [2013-11-03 Sun 12:13]
+**** DONE Level 3
+     CLOSED: [2013-11-03 Sun 12:13]
+**** DONE 5 min
+     CLOSED: [2013-11-03 Sun 12:13]
+**** DONE 10 min
+     CLOSED: [2013-11-03 Sun 12:13]
+**** DONE 75 min
+     CLOSED: [2013-11-03 Sun 12:13]
+**** DONE 120 min
+     CLOSED: [2013-11-03 Sun 12:13]
+
 ** Fixes
    Just try except and if an error comes up give it a default name of its style of yoga
+* version 0.1.1
+  fixes to 0.1's bugs
