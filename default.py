@@ -15,6 +15,17 @@ __addonname__   = __addon__.getAddonInfo('name')
 __icon__        = __addon__.getAddonInfo('icon')
 
  
+    
+def buildTopLevelMenu():
+    itemList = []
+    for category in ["Teacher", "Style", "Level", "Duration"]:
+        label = "Select A " + category
+        callbackParams = { 'yogaCategory' : getYogaGloCategory(category) }
+        url = PLUGIN + "?" + urllib.urlencode(callbackParams)
+        li = xbmcgui.ListItem(label=category, label2=label, iconImage="Default.png")
+        itemList.append((url, li, True))
+    addDirs(itemList)
+    xbmcplugin.endOfDirectory(HANDLE)
 
 title = "Hello World"
 
@@ -67,3 +78,6 @@ def addDirs(linkList):
     return xbmcplugin.addDirectoryItems(HANDLE, linkList, len(linkList))
 
 
+if not 'yogaCategory' in parameters:
+    print "Building the Top Menu"
+    buildTopLevelMenu()
