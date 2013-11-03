@@ -1,3 +1,5 @@
+from BeautifulSoup import BeautifulSoup
+import sys
 import urllib
 import urllib2
 import re
