@@ -9,7 +9,10 @@ import xbmcplugin
 
 import gzip
 import StringIO
+
+PLUGIN = sys.argv[0]
 HANDLE = int(sys.argv[1])
+BASEURL = "http://www.yogaglo.com"
 
 pluginName = "plugin.video.yogaglo"
 __addon__       = xbmcaddon.Addon(id=pluginName)
