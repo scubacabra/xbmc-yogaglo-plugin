@@ -1,4 +1,7 @@
+import urllib
 import urllib2
+import re
+
 import xbmc
 import xbmcaddon
 import xbmcgui
@@ -15,6 +18,21 @@ __addonname__   = __addon__.getAddonInfo('name')
 __icon__        = __addon__.getAddonInfo('icon')
 
  
+def playYogaGloVideo(parameters):
+    vidPage = parameters['yogagloUrl']
+    if not vidPage[0] == "/":
+        vidPage = "/" + vidPage
+     
+    html = openUrl(BASEURL + vidPage)
+    playpath = urllib.unquote(re.compile("url: '(mp4[^']*)'").findall(html)[0])
+    swfUrl = re.compile("url:\s+'([^mp4]+[^']*)'").findall(html)[0]
+    rtmpUrl = re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
+    
+    liz = xbmcgui.ListItem(label="DANIEL", path=rtmpUrl + "/" + playpath)
+    liz.setProperty('PlayPath', playpath);
+    liz.setProperty('SWFPlayer', swfUrl);
+    xbmcplugin.setResolvedUrl(HANDLE,True, liz) 
+      
 def buildClassesMenu(parameters):
     itemList = []
     url = BASEURL + parameters['yogagloUrl']
@@ -155,3 +173,5 @@ else:
     else:
         if not 'play' in parameters:
             buildClassesMenu(parameters)
+        else:
+            playYogaGloVideo(parameters)
