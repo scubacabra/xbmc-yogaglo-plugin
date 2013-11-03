@@ -27,6 +27,11 @@ line3 = "showing this message in python modules"
 dialog = xbmcgui.Dialog()
 dialog.ok(__addonname__, line1, line2, line3) 
 xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(title, text, time, __icon__))
+def addDir(url, listItem, isFolder):
+    return xbmcplugin.addDirectoryItem(HANDLE, url, listItem, isFolder)
 
+def addDirs(linkList):
+    print "Trying to add dirs %s, %s" % (HANDLE, len(linkList))
+    return xbmcplugin.addDirectoryItems(HANDLE, linkList, len(linkList))
 
 
