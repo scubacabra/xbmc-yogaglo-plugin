@@ -15,9 +15,9 @@ from xbmcUtil import getXbmcInputParameters
 import xbmcgui
 
 from http import openUrl
+from http import openUrlWithCookie
+from http import login
 
-import cookielib
-import mechanize
 from weblogin import doLogin
 
 import os
@@ -26,6 +26,8 @@ class YogaGlo:
     pluginName = "plugin.video.yogaglo"
     baseUrl = "http://www.yogaglo.com"
     cookieFile = "yogaGloCookie.lwp"
+    yogaGloSignInUrl = "http://www.yogaglo.com/signin.php"
+    yogaGloLoginUrl = "http://www.yogaglo.com/eventcontroler.php"
 
     def __init__(self, plugin, handle, params):
         print "YogaGlo -- args are %s, %s, %s" % (plugin, handle, params)
@@ -38,7 +40,13 @@ class YogaGlo:
         if not os.path.exists(self.addonProfilePath):
             os.makedirs(self.addonProfilePath)
 
-        self.cookiePath = self.addonProfilePath + self.cookieFile
+        self.cookiePath = os.path.join(self.addonProfilePath, self.cookieFile)
+        if not os.path.isfile(self.cookiePath):
+            print "YogaGlo -- No cookie found for %s, attempting to log on to YogaGlo with credentials" % self.cookiePath
+            self.yogaGloLoggedIn = self.yogaGloLogin()
+        else:
+            self.yogaGloLoggedIn = True
+
         self.pluginParameters = getXbmcInputParameters(params)
         
         print "YogaGlo -- DONE WITH INIT"
@@ -176,16 +184,9 @@ class YogaGlo:
         vidPage = self.pluginParameters['yogagloUrl']
         if not vidPage[0] == "/":
             vidPage = "/" + vidPage
-            logged_in = doLogin(urllib.unquote(self.addonProfilePath), "daniel.j.mijares@gmail.com", "seminoles35")
-            print logged_in 
-            if logged_in:
-                br = mechanize.Browser()
-                cj = cookielib.LWPCookieJar()
-                br.set_cookiejar(cj)
-                cookiepath = os.path.join(self.addonProfilePath, 'cookies.lwp')
-                cj.load(cookiepath , ignore_discard=True, ignore_expires=True)
-                response = br.open(self.baseUrl + vidPage)
-                html = response.read()
+            print self.yogaGloLoggedIn
+            if self.yogaGloLoggedIn:
+                html = openUrlWithCookie(self.baseUrl + vidPage, self.cookiePath)
                 print re.compile(".*url: '([^']*)'").findall(html)
                 swfUrl = re.compile(".*url: '([^']*)'").findall(html)[0]
                 print re.compile('url: "([^"]*)"').findall(html)
@@ -217,3 +218,15 @@ class YogaGlo:
                     self.buildClassesMenu()
                 else:
                     self.playYogaGloVideo()
+
+    def yogaGloLogin(self):
+        username = self.addon.getSetting('username')
+        password = self.addon.getSetting('password')
+        if username != "" and password != "":
+            print "YogaGlo -- found credentials for username and password, attempting to logon"
+            loggedOn = login(self.cookiePath, username, password, self.yogaGloSignInUrl)
+            print "YogaGlo -- logon was %s", "Successful" if loggedOn else "UnSuccessful"
+            return loggedOn
+
+        print "YogaGlo -- One of either Username or Password is blank, cannot log on" #TODO show error dialog
+        return False
