@@ -2,6 +2,14 @@ import urllib2
 import gzip
 import StringIO
 
+import cookielib
+import mechanize
+
+import os, re
+
+from BeautifulSoup import BeautifulSoup
+from mechanize import HTTPCookieProcessor
+
 def openUrl(url):
     #create an opener
     opener = urllib2.build_opener()
@@ -33,3 +41,60 @@ def openUrl(url):
      
     # Return html
     return htmlData
+
+def openUrlWithCookie(url, cookie):
+    br = mechanize.Browser()
+    cj = cookielib.LWPCookieJar()
+    br.set_cookiejar(cj)
+    cj.load(cookie , ignore_discard=True, ignore_expires=True)
+    response = br.open(url)
+    html = response.read()
+    return html
+
+def login(cookiePath, username, password, signinUrl):
+    print cookiePath
+
+    #delete any old version of the cookie file
+    try:
+        os.remove(cookiepath)
+        print cookiepath
+    except:
+        pass
+
+    browser = mechanize.Browser()
+    cookies = cookielib.LWPCookieJar()
+    browser.set_cookiejar(cookies)
+    browser.set_handle_gzip(True)
+    browser.set_handle_redirect(True)
+    browser.set_handle_referer(True)
+    browser.set_handle_robots(False)
+    browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time = 1)
+    opener = mechanize.build_opener(HTTPCookieProcessor(cookies))
+    mechanize.install_opener(opener)
+    browser.open(signinUrl)
+    browser.select_form(name="do_User__eventCheckIdentification")
+    browser['fields[password]'] = password
+    browser['fields[email]'] = username
+    print browser.form
+    response2 = browser.submit()
+    source = response2.read()
+    login = check_login(source,username)
+    #if login suceeded, save the cookiejar to disk
+    if login == True:
+        cookies.save(cookiePath , ignore_discard=True, ignore_expires=True)
+
+    #return whether we are logged in or not
+    return login
+
+def check_login(source,username):
+
+    #the string you will use to check if the login is successful.
+    #you may want to set it to:    username     (no quotes)
+    logged_in_string = 'Welcome Back'
+
+    #search for the string in the html, without caring about upper or lower case
+    if re.search(logged_in_string,source,re.IGNORECASE):
+        return True
+    else:
+        return False
+
