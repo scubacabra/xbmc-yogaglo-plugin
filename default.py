@@ -12,6 +12,11 @@ import xbmcplugin
 import gzip
 import StringIO
 
+import os
+import cookielib
+import mechanize
+from weblogin import doLogin
+
 PLUGIN = sys.argv[0]
 HANDLE = int(sys.argv[1])
 BASEURL = "http://www.yogaglo.com"
@@ -20,17 +25,55 @@ pluginName = "plugin.video.yogaglo"
 __addon__       = xbmcaddon.Addon(id=pluginName)
 __addonname__   = __addon__.getAddonInfo('name')
 __icon__        = __addon__.getAddonInfo('icon')
-
+_addonProfilePath = xbmc.translatePath( __addon__.getAddonInfo('profile') ).decode('utf-8')# Dir where plugin settings and cache will be stored
+print _addonProfilePath
+if not os.path.exists(_addonProfilePath):
+          os.makedirs(_addonProfilePath)
+print __addon__.getAddonInfo('profile')
+cookiePath = _addonProfilePath + "cookies.lwp"
+print cookiePath
 def playYogaGloVideo(parameters):
+    print urllib.unquote(_addonProfilePath)
+    print urllib.quote(_addonProfilePath)
+    try:
+        f = file(urllib.quote(_addonProfilePath) + "myfile.dat", "w")
+    except:
+        print "FAIL"
+    try:
+        f = file(urllib.unquote(_addonProfilePath) + "myfile.dat", "w")
+    except:
+        print "FAIL"
+    try:
+        f = file(_addonProfilePath + "myfile.dat", "w")
+    except:
+        print "FAIL"
+    logged_in = False
     vidPage = parameters['yogagloUrl']
     if not vidPage[0] == "/":
         vidPage = "/" + vidPage
-     
-    html = openUrl(BASEURL + vidPage)
-    playpath = urllib.unquote(re.compile("url: '(mp4[^']*)'").findall(html)[0])
-    swfUrl = re.compile("url:\s+'([^mp4]+[^']*)'").findall(html)[0]
-    rtmpUrl = re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
+    logged_in = doLogin(urllib.unquote(_addonProfilePath), "daniel.j.mijares@gmail.com", "seminoles35")
+    print logged_in 
+    if logged_in:
+        br = mechanize.Browser()
+        cj = cookielib.LWPCookieJar()
+        br.set_cookiejar(cj)
+        cookiepath = os.path.join(_addonProfilePath,'cookies.lwp')
+        cj.load(cookiepath , ignore_discard=True, ignore_expires=True)
+        response = br.open(BASEURL + vidPage)
+        html = response.read()
+        print re.compile(".*url: '([^']*)'").findall(html)
+        swfUrl = re.compile(".*url: '([^']*)'").findall(html)[0]
+        print re.compile('url: "([^"]*)"').findall(html)
+        playpath = urllib.unquote(re.compile('url: "([^"]*)"').findall(html)[0])
+        print re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
+        rtmpUrl = re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
+    else:
+        html = openUrl(BASEURL + vidPage)
+        playpath = urllib.unquote(re.compile("url: '(mp4[^']*)'").findall(html)[0])
+        swfUrl = re.compile("url:\s+'([^mp4]+[^']*)'").findall(html)[0]
+        rtmpUrl = re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
     
+    print (playpath, swfUrl, rtmpUrl)
     liz = xbmcgui.ListItem(label="DANIEL", path=rtmpUrl + "/" + playpath)
     liz.setProperty('PlayPath', playpath);
     liz.setProperty('SWFPlayer', swfUrl);
