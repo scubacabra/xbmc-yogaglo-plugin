@@ -23,3 +23,8 @@
    Just try except and if an error comes up give it a default name of its style of yoga
 * version 0.1.1
   fixes to 0.1's bugs
+* version 0.2
+** Logging in with xbmc settings from configure
+** Initial Code Refactory
+** If no cookie file is present attempts to log on to YogaGlo when the class is initialized.
+** If there is a cookie present assumes that you are logged on, I haven't had any problems with cookie expiring yet.
