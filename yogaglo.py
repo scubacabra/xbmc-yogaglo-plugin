@@ -17,6 +17,7 @@ import xbmcgui
 from http import openUrl
 from http import openUrlWithCookie
 from http import login
+from http import check_login
 
 from weblogin import doLogin
 
