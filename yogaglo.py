@@ -149,7 +149,7 @@ class YogaGlo:
         for yogaClass in classes:
             classUrl = yogaClass.a['href']
             classCoverPic = yogaClass.a.img['src'].encode('utf-8')
-            classLength = yogaClass.findAll('div')[3].contents
+            classLength = yogaClass.findAll('div')[3].contents[0]
             id = yogaClass['id']
             desc = self.getClassDescription(id)
             soup = BeautifulSoup(desc)
@@ -164,11 +164,12 @@ class YogaGlo:
             fullDesc = soup.findAll('br')[-1].nextSibling
             classInfo = (classUrl, classCoverPic, classLength, title, style, level, teacher, fullDesc)
             print classInfo
-                
-            li = xbmcgui.ListItem(label=title, label2=fullDesc, iconImage=classCoverPic)  # , path=streamurl)
+            secondLabel = "Style: " + style + " Level: " + level
+            plot = fullDesc + "\n\n" + "Style : " + style + "\nLevel: " + level + "\nTeacher: " + teacher
+            li = xbmcgui.ListItem(label=title, label2=secondLabel, iconImage=classCoverPic)  # , path=streamurl)
             li.setInfo('video', {'title': title,
-                                 'label': "Style: " + style + " Level: " + level,
-                                 'plot': fullDesc})
+                                 'plot': plot,
+                                 'Duration': int(classLength.split(" ")[0])})
             li.setProperty('IsPlayable', 'true')
             callbackParams = { 'yogaCategory' : self.pluginParameters['yogaCategory'], 'yogagloUrl' : classUrl, 'play': 1}
             callBackUrl = self.xbmcPlugin + "?" + urllib.urlencode(callbackParams)
