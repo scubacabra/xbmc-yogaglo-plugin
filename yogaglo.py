@@ -48,7 +48,7 @@ class YogaGlo:
         else:
             print "YogaGlo -- Found cookie... just trying to see if it is still a valid session"
             myaccount = openUrlWithCookie("http://www.yogaglo.com/myaccounttoday.php", self.cookiePath)
-            self.yogaGloLoggedIn = check_login(myaccount, "User") #TODO Take this second argument out, don't need it
+            self.yogaGloLoggedIn = check_login(myaccount)
             if not self.yogaGloLoggedIn:
                 print "YogaGlo -- Cookie PHP session seems invalid...logging in again"
                 self.yogaGloLoggedIn = self.yogaGloLogin()
