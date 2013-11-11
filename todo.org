@@ -28,3 +28,8 @@
 ** Initial Code Refactory
 ** If no cookie file is present attempts to log on to YogaGlo when the class is initialized.
 ** If there is a cookie present assumes that you are logged on, I haven't had any problems with cookie expiring yet.
+*** BUGS
+    Cookie file is present but is expired -- code shows as logged on, but definitely need to re-log on
+* version 0.2.1
+  Fix of expired cookie session -- not the way I would want it, but I think session expiration is handled on yg's server so impossible to tell from cookie when expires
+  solution was to try and use cookie to get on to myaccounttoday.php and search for 'Welcome back' if this doesn't work then we need to login again.
