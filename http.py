@@ -122,7 +122,7 @@ def login(cookiePath, username, password, signinUrl):
     print response2.info()
     print response2.geturl()
     source = response2.read()
-    login = check_login(source,username)
+    login = check_login(source)
     #if login suceeded, save the cookiejar to disk
     if login == True:
         cookies.save(cookiePath, ignore_discard=True)#, ignore_expires=True)
@@ -130,7 +130,7 @@ def login(cookiePath, username, password, signinUrl):
     #return whether we are logged in or not
     return login
 
-def check_login(source,username):
+def check_login(source):
 
     #the string you will use to check if the login is successful.
     #you may want to set it to:    username     (no quotes)
