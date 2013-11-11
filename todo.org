@@ -33,3 +33,5 @@
 * version 0.2.1
   Fix of expired cookie session -- not the way I would want it, but I think session expiration is handled on yg's server so impossible to tell from cookie when expires
   solution was to try and use cookie to get on to myaccounttoday.php and search for 'Welcome back' if this doesn't work then we need to login again.
+* version 0.3
+  Adding video information to info menu - teacher, level, duration, style
