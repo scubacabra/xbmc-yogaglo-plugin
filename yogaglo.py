@@ -165,11 +165,14 @@ class YogaGlo:
             classInfo = (classUrl, classCoverPic, classLength, title, style, level, teacher, fullDesc)
             print classInfo
             secondLabel = "Style: " + style + " Level: " + level
-            plot = fullDesc + "\n\n" + "Style : " + style + "\nLevel: " + level + "\nTeacher: " + teacher
-            li = xbmcgui.ListItem(label=title, label2=secondLabel, iconImage=classCoverPic)  # , path=streamurl)
+            plot = fullDesc
+            li = xbmcgui.ListItem(label=title, label2=secondLabel, iconImage=classCoverPic)
             li.setInfo('video', {'title': title,
                                  'plot': plot,
-                                 'Duration': int(classLength.split(" ")[0])})
+                                 'Duration': int(classLength.split(" ")[0]),
+                                 'plotoutline': "Style : " + style + " -- Level: " + level,
+                                 'tagline': teacher,
+                                 'genre': "Yoga"})
             li.setProperty('IsPlayable', 'true')
             callbackParams = { 'yogaCategory' : self.pluginParameters['yogaCategory'], 'yogagloUrl' : classUrl, 'play': 1}
             callBackUrl = self.xbmcPlugin + "?" + urllib.urlencode(callbackParams)
