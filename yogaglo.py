@@ -1,10 +1,6 @@
-from BeautifulSoup import BeautifulSoup
-
 import xbmc
 import xbmcaddon
-
-import urllib
-import re
+import xbmcgui
 
 from xbmcUtil import addDir
 from xbmcUtil import addDirs
@@ -12,16 +8,15 @@ from xbmcUtil import eod
 from xbmcUtil import listItemResolvedUrl
 from xbmcUtil import getXbmcInputParameters
 
-import xbmcgui
-
 from http import openUrl
 from http import openUrlWithCookie
 from http import login
 from http import check_login
 
-from weblogin import doLogin
-
+from SoupCrawler import SoupCrawler
 import os
+import urllib
+import re
 
 class YogaGlo:
     pluginName = "plugin.video.yogaglo"
@@ -35,6 +30,7 @@ class YogaGlo:
         self.xbmcPlugin = plugin
         self.xbmcHandle = handle
         self.addon = xbmcaddon.Addon(id=self.pluginName)
+        self.crawler = SoupCrawler(self.baseUrl) # Soup Crawler to get info
 
         # Dir where plugin settings and cache will be stored
         self.addonProfilePath = xbmc.translatePath(self.addon.getAddonInfo('profile')).decode('utf-8')
@@ -57,27 +53,7 @@ class YogaGlo:
         
         print "YogaGlo -- DONE WITH INIT"
 
-    def getNavigationInformation(self, category):
-        print "YogaGlo -- getting the navigation information for category: %s" % category
-        menuList = []
-        yogaglo = openUrl(self.baseUrl)
-        soup = BeautifulSoup(''.join(yogaglo))
-        navInfo = soup.find('li', id=category).findAll('a')
-        print navInfo
 
-        for info in navInfo:
-            infoTitle = info.contents[0]
-            infoUrl = urllib.quote(info['href'].encode('utf-8'))
-            menu = (infoTitle, infoUrl)
-            
-            if category == "2":  # Looking at teachers, need images
-                teacherImageUrl = self.getTeacherImageUrl(infoUrl)
-                menu = menu + (teacherImageUrl,)
-            
-            menuList.append(menu)
-
-        print "YogaGlo -- got all the navigation information for category: %s" % category
-        return menuList
 
     def getYogaGloCategory(self, category):
         if category == "Teacher":
@@ -89,18 +65,32 @@ class YogaGlo:
         elif category == "Duration":
             return 5
 
-    def getTeacherImageUrl(self, teacherUrl):
-        url = self.baseUrl + urllib.quote(teacherUrl.encode('utf-8'))
-        teachercontent = openUrl(url)
-        soup = BeautifulSoup(teachercontent)
-        imgUrl = soup.find('section', attrs={'class': 'cf'}).div.img
-        return self.baseUrl + urllib.quote(imgUrl['src'].encode('utf-8'))
-        
+
+    def buildClassesMenu(self):
+        itemList = [] #list of items for xbmc to handle (you get a progress bar with this!)
+        classesInformation = self.crawler.getClassesInformation(self.pluginParameters['yogagloUrl'])
+        for classInfo in classesInformation:
+            li = xbmcgui.ListItem(label=classInfo['title'], label2=classInfo['secondLabel'], iconImage=classInfo['classCoverPicUrl'])
+            li.setInfo('video', {'title': classInfo['title'],
+                                 'plot': classInfo['plot'],
+                                 'Duration': classInfo['duration'],
+                                 'plotoutline': classInfo['secondLabel'],
+                                 'tagline': classInfo['teacher'],
+                                 'genre': "Yoga"})
+            li.setProperty('IsPlayable', 'true')
+            callbackParams = { 'yogaCategory' : self.pluginParameters['yogaCategory'], 'yogagloUrl' : classInfo['url'], 'play': 1}
+            callBackUrl = self.xbmcPlugin + "?" + urllib.urlencode(callbackParams)
+            itemList.append((callBackUrl, li, False))
+
+        addDirs(self.xbmcHandle, itemList)
+        eod(self.xbmcHandle)
+
+
     def buildYogaCategoryMenu(self):
         print "YogaGlo -- Building category menu just selected"
         itemList = []
         ygCategory = self.pluginParameters['yogaCategory']
-        menu = self.getNavigationInformation(ygCategory)
+        menu = crawler.getNavigationInformation(ygCategory)
         print menu
 
         for item in menu:
@@ -139,55 +129,7 @@ class YogaGlo:
         eod(self.xbmcHandle)
         print "YogaGlo -- initial Menu built"
             
-    def buildClassesMenu(self):
-        itemList = []
-        ygUrl = self.pluginParameters['yogagloUrl']
-        url  = self.baseUrl + ygUrl
-        page = openUrl(url)
-        soup = BeautifulSoup(page)
-        classes = soup.find('div', attrs={'class': re.compile("^main_layout")}).findAll('section')[-1].findAll('div', id=re.compile('^[0-9]+'))
-        for yogaClass in classes:
-            classUrl = yogaClass.a['href']
-            classCoverPic = yogaClass.a.img['src'].encode('utf-8')
-            classLength = yogaClass.findAll('div')[3].contents[0]
-            id = yogaClass['id']
-            desc = self.getClassDescription(id)
-            soup = BeautifulSoup(desc)
-            style = soup.i.nextSibling
-            try:
-                title = soup.b.contents[0]
-            except:
-                title = style  # TODO something else here, like color it to make it different
-
-            level = soup.findAll('i')[1].nextSibling
-            teacher = soup.findAll('i')[2].nextSibling
-            fullDesc = soup.findAll('br')[-1].nextSibling
-            classInfo = (classUrl, classCoverPic, classLength, title, style, level, teacher, fullDesc)
-            print classInfo
-            secondLabel = "Style: " + style + " Level: " + level
-            plot = fullDesc
-            li = xbmcgui.ListItem(label=title, label2=secondLabel, iconImage=classCoverPic)
-            li.setInfo('video', {'title': title,
-                                 'plot': plot,
-                                 'Duration': int(classLength.split(" ")[0]),
-                                 'plotoutline': "Style : " + style + " -- Level: " + level,
-                                 'tagline': teacher,
-                                 'genre': "Yoga"})
-            li.setProperty('IsPlayable', 'true')
-            callbackParams = { 'yogaCategory' : self.pluginParameters['yogaCategory'], 'yogagloUrl' : classUrl, 'play': 1}
-            callBackUrl = self.xbmcPlugin + "?" + urllib.urlencode(callbackParams)
-            itemList.append((callBackUrl, li, False))
-
-        addDirs(self.xbmcHandle, itemList)
-        eod(self.xbmcHandle)
-            
-    def getClassDescription(self, classId):
-        ajaxUrl = "/_ajax_get_class_description.php?"
-        query = { 'id' : classId, 't': 0 }
-        url = self.baseUrl + ajaxUrl + urllib.urlencode(query)
-        desc = openUrl(url)
-        return desc
-        
+                                 
     def playYogaGloVideo(self):
         print urllib.unquote(self.addonProfilePath)
         logged_in = False
@@ -195,7 +137,7 @@ class YogaGlo:
         if not vidPage[0] == "/":
             vidPage = "/" + vidPage
             print self.yogaGloLoggedIn
-            if self.yogaGloLoggedIn:
+            if self.yogaGloLoggedIn: #logged in, get full video at highest resolution
                 html = openUrlWithCookie(self.baseUrl + vidPage, self.cookiePath)
                 print re.compile(".*url: '([^']*)'").findall(html)
                 swfUrl = re.compile(".*url: '([^']*)'").findall(html)[0]
@@ -203,7 +145,7 @@ class YogaGlo:
                 playpath = urllib.unquote(re.compile('url: "([^"]*)"').findall(html)[0])
                 print re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
                 rtmpUrl = re.compile("netConnectionUrl:\s+'([^']*)'").findall(html)[0]
-            else:
+            else: #not logged in, get preview clip instead
                 html = openUrl(self.baseUrl + vidPage)
                 playpath = urllib.unquote(re.compile("url: '(mp4[^']*)'").findall(html)[0])
                 swfUrl = re.compile("url:\s+'([^mp4]+[^']*)'").findall(html)[0]
