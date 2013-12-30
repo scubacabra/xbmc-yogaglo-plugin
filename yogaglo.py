@@ -70,7 +70,7 @@ class YogaGlo:
         itemList = [] #list of items for xbmc to handle (you get a progress bar with this!)
         classesInformation = self.crawler.getClassesInformation(self.pluginParameters['yogagloUrl'])
         for classInfo in classesInformation:
-            li = xbmcgui.ListItem(label=classInfo['title'], label2=classInfo['secondLabel'], iconImage=classInfo['classCoverPicUrl'])
+            li = xbmcgui.ListItem(label=classInfo['title'], label2=classInfo['secondLabel'], iconImage=classInfo['coverPicUrl'])
             li.setInfo('video', {'title': classInfo['title'],
                                  'plot': classInfo['plot'],
                                  'Duration': classInfo['duration'],

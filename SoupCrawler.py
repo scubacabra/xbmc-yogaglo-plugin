@@ -61,12 +61,12 @@ class SoupCrawler(object):
     # title, secondLabel, coverPicUrl, plot, duration, style, level, teacher, url
     def getClassesInformation(self, relativePageUrl):
         classesInformation = [] # return this list
-        pageContent = openUrl(self.baseUrl + relativePageUrl)
+        pageContent = openUrl(self.yogaGloUrl + relativePageUrl)
         soup = BeautifulSoup(pageContent)
         classes = soup.find('div', attrs={'class': re.compile("^main_layout")}).findAll('section')[-1].findAll('div', id=re.compile('^[0-9]+'))
         for yogaClass in classes:
             classUrl = yogaClass.a['href']
-            classCoverPic = yogaClass.a.img['src'].encode('utf-8')
+            classCoverPicUrl = yogaClass.a.img['src'].encode('utf-8')
             classLength = yogaClass.findAll('div')[3].contents[0]
             classInformation = self.getClassDescription(yogaClass['id'])
             classInformation['url'] = classUrl
@@ -74,7 +74,7 @@ class SoupCrawler(object):
             classInformation['duration'] = int(classLength.split(" ")[0])
             classesInformation.append(classInformation)
 
-        return classesList
+        return classesInformation
             
 
     # Get the class description key information from the ajax request
