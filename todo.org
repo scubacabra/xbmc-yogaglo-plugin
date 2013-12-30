@@ -41,4 +41,9 @@
    might someday be class oriented getting info from files to compare for new classes and stuff.
    For now just to organize code better.
 * version 0.3.2
-** TODO move all of source code that default.py depends on into resources/lib folder.  cleaner root structure
+** DONE move all of source code that default.py depends on into resources/lib folder.  cleaner root structure
+   CLOSED: [2013-12-30 Mon 12:13]
+** DONE Remove cookie files from testing
+   CLOSED: [2013-12-30 Mon 12:15]
+** DONE Create a test folder
+   CLOSED: [2013-12-30 Mon 12:15]
