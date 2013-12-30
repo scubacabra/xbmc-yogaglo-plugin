@@ -36,6 +36,9 @@
 * version 0.3
   Adding video information to info menu - teacher, level, duration, style
 * version 0.3.1
-** Refactor BeautifulSoup Crawler Code to it's own class
+** DONE Refactor BeautifulSoup Crawler Code to it's own class
+   CLOSED: [2013-12-30 Mon 11:42]
    might someday be class oriented getting info from files to compare for new classes and stuff.
    For now just to organize code better.
+* version 0.3.2
+** TODO move all of source code that default.py depends on into resources/lib folder.  cleaner root structure
