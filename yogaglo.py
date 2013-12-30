@@ -90,7 +90,7 @@ class YogaGlo:
         print "YogaGlo -- Building category menu just selected"
         itemList = []
         ygCategory = self.pluginParameters['yogaCategory']
-        menu = crawler.getNavigationInformation(ygCategory)
+        menu = self.crawler.getNavigationInformation(ygCategory)
         print menu
 
         for item in menu:

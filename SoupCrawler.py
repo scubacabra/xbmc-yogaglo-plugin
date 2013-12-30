@@ -44,11 +44,11 @@ class SoupCrawler(object):
     # need to encode url properly in case their are utf-8 characters -- there are some. Noah Maze!
     # returns full URL to teacher image
     def getTeacherImageUrl(self, teacherUrl):
-        url = self.baseUrl + urllib.quote(teacherUrl.encode('utf-8'))
+        url = self.yogaGloUrl + urllib.quote(teacherUrl.encode('utf-8'))
         teachercontent = openUrl(url)
         soup = BeautifulSoup(teachercontent)
         imgUrl = soup.find('section', attrs={'class': 'cf'}).div.img
-        return self.baseUrl + urllib.quote(imgUrl['src'].encode('utf-8'))
+        return self.yogaGloUrl + urllib.quote(imgUrl['src'].encode('utf-8'))
 
 
     # Get Classes information -- for whatever category it's all the same
