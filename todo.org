@@ -35,3 +35,7 @@
   solution was to try and use cookie to get on to myaccounttoday.php and search for 'Welcome back' if this doesn't work then we need to login again.
 * version 0.3
   Adding video information to info menu - teacher, level, duration, style
+* version 0.3.1
+** Refactor BeautifulSoup Crawler Code to it's own class
+   might someday be class oriented getting info from files to compare for new classes and stuff.
+   For now just to organize code better.
