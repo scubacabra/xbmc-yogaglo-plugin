@@ -65,7 +65,7 @@ class SoupCrawler(object):
         soup = BeautifulSoup(pageContent)
         classes = soup.find('div', attrs={'class': re.compile("^main_layout")}).findAll('section')[-1].findAll('div', id=re.compile('^[0-9]+'))
         for yogaClass in classes:
-            classUrl = yogaClass.a['href']
+            classUrl = yogaClass.a['href'].encode('utf-8')
             classCoverPicUrl = yogaClass.a.img['src'].encode('utf-8')
             classLength = yogaClass.findAll('div')[3].contents[0]
             classInformation = self.getClassDescription(yogaClass['id'])
