@@ -95,8 +95,14 @@ class SoupCrawler(object):
             title = style  # TODO something else here, like color it to make it different
 
         level = soup.findAll('i')[1].nextSibling
-        teacher = soup.findAll('i')[2].nextSibling
-        fullDesc = soup.findAll('br')[-1].nextSibling
+        teacher = soup.findAll('i')[2].nextSibling #any teachers from this ajax call are already expressed in unicode, but not the \xe9, it takes percent encoded %C3%A9 to unicode \xc3\xa9
+
+        # Some class descriptions span multiple br's, key off the 'grayline' div and all text after that is a description
+        fullDesc = ""
+        descriptionElements = soup.find('div', attrs={'class': 'grayline'}).findAllNext(text=True)
+        for descElement in descriptionElements:
+            fullDesc += descElement
+
         classInformation = { 'title' : title,
                              'secondLabel' : "Style: " + style + " Level: " + level,
                              'plot' : fullDesc,
