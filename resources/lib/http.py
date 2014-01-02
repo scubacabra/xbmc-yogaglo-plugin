@@ -62,8 +62,8 @@ def login(cookiePath, username, password, signinUrl):
 
     #delete any old version of the cookie file
     try:
-        os.remove(cookiepath)
-        print cookiepath
+        os.remove(cookiePath)
+        print cookiePath
     except:
         pass
 
