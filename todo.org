@@ -47,3 +47,58 @@
    CLOSED: [2013-12-30 Mon 12:15]
 ** DONE Create a test folder
    CLOSED: [2013-12-30 Mon 12:15]
+
+* version 0.3.3
+  Write some unit tests for the plugin
+  Fix the Noah Maze bug (really a utf-8 bug but he is the culprit, so it is named after him)
+** DONE Things to test for yogaglo plugin
+   CLOSED: [2014-01-02 Thu 15:42]
+*** DONE Get the teachers Names and page Urls
+    CLOSED: [2014-01-02 Thu 15:37]
+
+**** DONE edge Cases
+     CLOSED: [2014-01-02 Thu 15:37]
+
+***** DONE utf-8 noah maze
+      CLOSED: [2014-01-02 Thu 15:37]
+
+****** Name should be in unicode i.e \xe3
+
+****** Teacher rel page url should be percent encoded i.e. %C3%A9
+
+*** DONE Get the correct Teacher Image absolute URL from the teacher page
+    CLOSED: [2014-01-02 Thu 15:38]
+
+**** DONE edge cases
+     CLOSED: [2014-01-02 Thu 15:38]
+
+***** DONE utf-8 characters
+      CLOSED: [2014-01-02 Thu 15:38]
+      not really utf-8 characters here, but still use his name for testing for this as the 'odd' case
+
+*** DONE Get the class description with the class id
+    CLOSED: [2014-01-02 Thu 15:40]
+
+**** DONE edge cases
+     CLOSED: [2014-01-02 Thu 15:40]
+
+***** DONE utf-8 characters (Noah Maze)
+      CLOSED: [2014-01-02 Thu 15:40]
+
+****** Apparently for Noah, his name is given in unicode but not like in the menu, it is converted from percent encoding
+       so it is represented by %C3%A9 -> \xc3\xa9.  I prefer \xe3, but oh well.
+
+
+***** DONE missing title, default title to style of yoga
+      CLOSED: [2014-01-02 Thu 15:40]
+*** DONE Utf8 mess up for teacher class parsing with class url in utf-8.
+    CLOSED: [2014-01-02 Thu 16:57]
+** Mocking for testing
+*** Just need to 'patch' rather than mock the openUrl method to return the correct html from the resources folder located @ test/unit/resources
+** DONE Integration Test
+   CLOSED: [2014-01-02 Thu 16:57]
+*** DONE Just the utf-8 mess up and a normal case for teacher page parsing
+    CLOSED: [2014-01-02 Thu 16:56]
+
+** DONE Fix Bug with any Noah Maze problems
+   CLOSED: [2014-01-02 Thu 16:57]
