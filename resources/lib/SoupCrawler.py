@@ -61,7 +61,7 @@ class SoupCrawler(object):
     # title, secondLabel, coverPicUrl, plot, duration, style, level, teacher, url
     def getClassesInformation(self, relativePageUrl):
         classesInformation = [] # return this list
-        pageContent = openUrl(self.yogaGloUrl + relativePageUrl)
+        pageContent = openUrl(self.yogaGloUrl + urllib.quote(relativePageUrl.encode('utf-8')))
         soup = BeautifulSoup(pageContent)
         classes = soup.find('div', attrs={'class': re.compile("^main_layout")}).findAll('section')[-1].findAll('div', id=re.compile('^[0-9]+'))
         for yogaClass in classes:
