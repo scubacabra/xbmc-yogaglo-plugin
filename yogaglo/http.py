@@ -6,19 +6,25 @@ import cookielib
 import mechanize
 import Cookie
 
-import os, re
+import os
+import re
 
 from BeautifulSoup import BeautifulSoup
 from mechanize import HTTPCookieProcessor
+from urlparse import urljoin
 
 def openUrl(url):
+    print url
+
     #create an opener
     opener = urllib2.build_opener()
 
     #Add useragent, sites don't like to interact with scripts
     opener.addheaders = [
-        ('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0'),
-        ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+        ('User-Agent',
+         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0'),
+        ('Accept',
+         'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
         ('Accept-Language', 'en-gb,en;q=0.5'),
         ('Accept-Encoding', 'gzip,deflate'),
         ('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'),
@@ -103,16 +109,30 @@ def check_login(source):
 
 def setupMechanizeBrowser():
     browser = mechanize.Browser()
-    browser.addheaders = [('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0'),
-                      ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
-                      ('Accept-Language', 'en-gb,en;q=0.5'),
-                      ('Accept-Encoding', 'gzip,deflate'),
-                      ('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'),
-                      ('Keep-Alive', '115'),
-                      ('DNT', '1')]
+    browser.addheaders = [
+        ('User-Agent',
+         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0'),
+        ('Accept',
+         'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+        ('Accept-Language', 'en-gb,en;q=0.5'),
+        ('Accept-Encoding', 'gzip,deflate'),
+        ('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'),
+        ('Keep-Alive', '115'),
+        ('DNT', '1')
+    ]
     browser.set_handle_gzip(True)
     browser.set_handle_redirect(True)
     browser.set_handle_referer(True)
     browser.set_handle_robots(False)
-    browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time = 1)
+    browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(),
+                               max_time = 1)
     return browser
+
+def convert_relative_to_absolute_url(base_url, relative_url):
+    # may be unicode, need utf8 encoding
+    utf8_relative_url = relative_url.encode('utf-8')
+    # percent encode relative url portion, it may have utf8 characters
+    # open url can't read those
+    url_encoded_relative_url = urllib2.quote(utf8_relative_url)
+    return urljoin(base_url, url_encoded_relative_url)
+
