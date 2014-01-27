@@ -102,3 +102,17 @@
 
 ** DONE Fix Bug with any Noah Maze problems
    CLOSED: [2014-01-02 Thu 16:57]
+
+* version 0.4.0
+** DONE Add a menu item at the index for yoga of the day
+   CLOSED: [2014-01-07 Tue 20:54]
+   yogaglo selected videos for a few days
+** DONE Write 2 short test cases to test two different yoga's of the day.
+   CLOSED: [2014-01-07 Tue 20:54]
+   No dates for these videos. idk why. 6 videos total. Should be same Beautifulsoup code to get to them
+
+
+** DONE Re-arrange source to yogaglo folder
+   CLOSED: [2014-01-26 Sun 21:27]
+** DONE Add nose2 tests auto discover and run from command line (include xbmc stubs)
+   CLOSED: [2014-01-26 Sun 21:27]
