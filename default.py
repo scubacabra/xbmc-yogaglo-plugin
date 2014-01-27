@@ -1,9 +1,10 @@
-import os
 import sys
-import xbmcaddon
 
-sys.path.append (xbmc.translatePath( os.path.join( xbmcaddon.Addon().getAddonInfo('path'), 'resources', 'lib' )))
-from yogaglo import YogaGlo
+from yogaglo.yogaglo import YogaGlo
+from yogaglo.xbmc_util import get_yoga_glo_input_parameters
 
-yg = YogaGlo(sys.argv[0], int(sys.argv[1]), sys.argv[2])
+# parse parameters and give yogaglo plugin dictionary
+plugin_parameters = get_yoga_glo_input_parameters(sys.argv[2])
+
+yg = YogaGlo(sys.argv[0], int(sys.argv[1]), plugin_parameters)
 yg.processParameters()
