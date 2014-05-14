@@ -1,46 +1,46 @@
 from BeautifulSoup import BeautifulSoup
-
-#from http import openUrl, convert_relative_to_absolute_url
-from http import openUrl, convert_relative_to_absolute_url
 from urllib import urlencode
 from urlparse import urljoin
+from os.path import join
 import re
+
+from http import openUrl, openUrlWithCookie, convert_relative_to_absolute_url
 
 class SoupCrawler(object):
 
     # Yoga Glo Base Url
     def __init__(self, yoga_glo_url):
         self.yoga_glo_url = yoga_glo_url
-        self.classDescriptionAjaxUrl = convert_relative_to_absolute_url(yoga_glo_url,
-                                            "/_ajax_get_class_description.php")
+        self.classDescriptionAjaxUrl = convert_relative_to_absolute_url(
+            yoga_glo_url, "/_ajax_get_class_description.php")
 
     # Get basic navigation information, cueing off of Category
     # inputs
     # category [1-4]
     # Teacher, Style, Level, Duration
-    # Returns list of tuples (title, url, *imageUrl) 
+    # Returns list of dictionaries with keys (title, url, image_url*) 
     # *optional
     def get_yoga_glo_navigation_information(self, yoga_glo_category):
-        menuList = [] # list of tuples to return
+        menuList = [] # list of dictionaries to return
         yogaglo = openUrl(self.yoga_glo_url)
         soup = BeautifulSoup(''.join(yogaglo))
         navInfo = soup.find('li', id=yoga_glo_category).findAll('a')
-        print navInfo
-
+        
         for info in navInfo:
             infoTitle = info.contents[0]
             info_url = convert_relative_to_absolute_url(self.yoga_glo_url,
                                                         info['href'])
-            menu = (infoTitle, info_url)
-
             # Looking at teachers, need images
             if yoga_glo_category == "2":
                 teacherImageUrl = self.get_teacher_image_url(info_url)
-                menu = menu + (teacherImageUrl,)
+                menu = {'title' : infoTitle, 'url' : info_url,
+                        'image_url' : teacherImageUrl }
+                menuList.append(menu)
+                continue
 
+            menu = {'title' : infoTitle, 'url' : info_url}
             menuList.append(menu)
 
-        print "YogaGlo -- got all the navigation information for category: %s" % yoga_glo_category
         return menuList
 
 
@@ -124,15 +124,46 @@ class SoupCrawler(object):
                 'level' : level,
                 'teacher' : teacher }
 
+    # Get the yoga class video rtmp_url, swf_url, and play_path
+    # rtmp_url is just the rtmp_url + play_path
+    # from the javascript inside the actual yoga class html page
+    # inputs -- class page url, and cookie path
+    # This is the authorized video page, the full length HD video
+    # feeds available
+    def get_yogaglo_video_information(self, url, cookie_path):
+        html = openUrlWithCookie(url, cookie_path)
+        swf_url = re.compile(".*url: '([^']*)'").findall(html)[0]
+        play_path = re.compile('url: "([^"]*)"').findall(html)[0]
+        rtmp_base_url = re.compile(
+            "netConnectionUrl:\s+'([^']*)'").findall(html)[0]
+        # rtmp protocol won't join properl from urlparse.urljoin
+        rtmp_url = join(rtmp_base_url, play_path)
+        return {'swf_url': swf_url, 'rtmp_url': rtmp_url,
+                'play_path': play_path}
+
+    # Get the yoga class video rtmp_url, swf_url, and play_path
+    # from the javascript inside the actual yoga class html page
+    # inputs -- class page url, and cookie path
+    # This is the un-authorized video page, the 5-minute preview feed available
+    def get_yogaglo_preview_video_information(self, url):
+        html = openUrl(url)
+        play_path = re.compile("url: '(mp4[^']*)'").findall(html)[0]
+        swf_url = re.compile("url:\s+'([^mp4]+[^']*)'").findall(html)[0]
+        rtmp_base_url = re.compile(
+            "netConnectionUrl:\s+'([^']*)'").findall(html)[0]
+        # rtmp protocol won't join properl from urlparse.urljoin
+        rtmp_url = join(rtmp_base_url, play_path)
+        return {'swf_url': swf_url, 'rtmp_url': rtmp_url,
+                'play_path': play_path}
+
     #Get yoga-of-the-day title and info
     # return dictionary with {title, information}
     def get_yoga_of_the_day_title_and_info(self):
-            url = openUrl(self.yoga_glo_url)
-            yotd = BeautifulSoup(url)
-            yotd_section = yotd.find('section',
-                                            attrs={'class': 'home_vids'})
-            yotd_info = yotd_section.findNext('p')
+        url = openUrl(self.yoga_glo_url)
+        yotd = BeautifulSoup(url)
+        yotd_section = yotd.find('section', attrs={'class': 'home_vids'})
+        yotd_info = yotd_section.findNext('p')
 
-            return {'title' : yotd_section.h1.contents[0],
-                    'information' : yotd_info.contents[0].encode('utf-8') }
+        return {'title' : yotd_section.h1.contents[0],
+                'information' : yotd_info.contents[0].encode('utf-8') }
 

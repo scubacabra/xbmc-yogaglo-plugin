@@ -13,11 +13,14 @@ class TestSoupCrawler(object):
     def setUp(self):
         self.crawler = SoupCrawler("http://www.yogaglo.com")
         self.patcher = patch('yogaglo.soup_crawler.openUrl')
+        self.cookie_patcher = patch('yogaglo.soup_crawler.openUrlWithCookie')
         self.mock_open_url = self.patcher.start()
+        self.mock_open_url_with_cookie = self.cookie_patcher.start()
 
     def tearDown(self):
         self.crawler = None
         self.patcher.stop()
+        self.cookie_patcher.stop()
 
     def test_teacher_image_url_no_utf_8(self):
         self.mock_open_url.return_value = readTestInput("kathryn-page.html")
@@ -37,21 +40,23 @@ class TestSoupCrawler(object):
         self.mock_open_url.return_value = readTestInput(
             "yghomepage-kathryn-only-teacher.html")
         self.crawler.get_teacher_image_url = Mock(return_value="something")
-        title, ygUrl = self.crawler.get_yoga_glo_navigation_information(
-            "2")[0][:2]
-        assert_equals(title, "Kathryn Budig")
-        assert_equals(ygUrl,
+        # only holding one navigation info dictionary
+        result = self.crawler.get_yoga_glo_navigation_information("2")[0]
+        assert_equals(result['title'], "Kathryn Budig")
+        assert_equals(result['url'],
                       "http://www.yogaglo.com/teacher-37-Kathryn-Budig.html")
+        assert_equals(result['image_url'], "something")
 
     def test_get_teacher_name_and_url_utf_8_Noah_Maze(self):
         self.mock_open_url.return_value = readTestInput(
             "yghomepage-noah-only-teacher.html")
         self.crawler.get_teacher_image_url = Mock(return_value="something")
-        title, ygUrl = self.crawler.get_yoga_glo_navigation_information(
-            "2")[0][:2]
-        assert_equals(title, u"Noah Maz\xe9")
-        assert_equals(ygUrl,
+        # only holding one navigation info dictionary
+        result = self.crawler.get_yoga_glo_navigation_information("2")[0]
+        assert_equals(result['title'], u"Noah Maz\xe9")
+        assert_equals(result['url'],
                       "http://www.yogaglo.com/teacher-4-Noah-Maz%C3%A9.html")
+        assert_equals(result['image_url'], "something")
 
     def test_class_description_no_utf_8(self): 
         self.mock_open_url.return_value = readTestInput(
@@ -144,3 +149,21 @@ class TestSoupCrawler(object):
         result = self.crawler.get_yoga_of_the_day_title_and_info()
         assert_equals(result['information'], info)
         assert_equals(result['title'], 'Yoga for Holiday Recovery & Detox')
+
+    def test_yogaglo_authorized_video_information(self):
+        self.mock_open_url_with_cookie.return_value = readTestInput(
+            "yg-authorized-kathryn-budig-video-3085.html")
+        result = self.crawler.get_yogaglo_video_information(
+            "some_url", "some_cookie_path")
+        assert_equals(result, {'swf_url': '/flowplayer/flowplayer.rtmp-3.2.3.swf',
+                               'rtmp_url': 'rtmp://s3k7ua22k2n3gs.cloudfront.net/cfx/st/mp4:04_28_13_KB_090_Hips_Flow_Level_2_3_3085-2013082100-1-shd.mp4',
+                               'play_path': 'mp4:04_28_13_KB_090_Hips_Flow_Level_2_3_3085-2013082100-1-shd.mp4'})
+
+    def test_yogaglo_unauthorized_video_information(self):
+        self.mock_open_url.return_value = readTestInput(
+            "yg-unauthorized-kathryn-budig-video-3085.html")
+        result = self.crawler.get_yogaglo_preview_video_information("some_url")
+        assert_equals(result, {'swf_url': '/flowplayer/flowplayer.rtmp-3.2.3.swf',
+                               'rtmp_url': 'rtmp://s3k7ua22k2n3gs.cloudfront.net/cfx/st/mp4:04_28_13_KB_090_Hips_Flow_Level_2_3_3085-2013082104-1-prv.mp4',
+                               'play_path': 'mp4:04_28_13_KB_090_Hips_Flow_Level_2_3_3085-2013082104-1-prv.mp4'})
+
