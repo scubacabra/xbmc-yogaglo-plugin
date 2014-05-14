@@ -14,8 +14,6 @@ from mechanize import HTTPCookieProcessor
 from urlparse import urljoin
 
 def openUrl(url):
-    print url
-
     #create an opener
     opener = urllib2.build_opener()
 
