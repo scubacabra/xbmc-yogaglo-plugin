@@ -1,6 +1,5 @@
 import urllib2
 from urlparse import urljoin
-
 import cookielib
 import mechanize
 from mechanize import HTTPCookieProcessor
