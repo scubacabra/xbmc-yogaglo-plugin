@@ -48,14 +48,10 @@ def openUrl(url, cookie=None, login=False):
 
 
 def login(cookiePath, username, password, signinUrl):
-    print cookiePath
-
     #delete any old version of the cookie file
-    try:
+    if os.path.exists(cookiePath):
+	log("cookie %s exists, deleting to aquire new cookie" % (cookiePath), LOGDEBUG)
         os.remove(cookiePath)
-        print cookiePath
-    except:
-        pass
 
     browser = openUrl(signinUrl, cookiePath, True)
     browser.select_form(name="do_User__eventCheckIdentification")
