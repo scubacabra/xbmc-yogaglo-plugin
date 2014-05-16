@@ -1,65 +1,51 @@
 import urllib2
-import gzip
-import StringIO
+from urlparse import urljoin
 
 import cookielib
 import mechanize
-import Cookie
+from mechanize import HTTPCookieProcessor
 
 import os
 import re
 
-from BeautifulSoup import BeautifulSoup
-from mechanize import HTTPCookieProcessor
-from urlparse import urljoin
-
-def openUrl(url):
-    #create an opener
-    opener = urllib2.build_opener()
-
-    #Add useragent, sites don't like to interact with scripts
-    opener.addheaders = [
+def openUrl(url, cookie=None, login=False):
+    browser = mechanize.Browser()
+    browser.addheaders = [
         ('User-Agent',
          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0'),
         ('Accept',
          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
         ('Accept-Language', 'en-gb,en;q=0.5'),
-        ('Accept-Encoding', 'gzip,deflate'),
         ('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'),
         ('Keep-Alive', '115'),
         ('Connection', 'keep-alive'),
         ('Cache-Control', 'max-age=0'),
-        ]
- 
-    resp = opener.open(url)
- 
-    # Compressed (gzip) response...
-    if resp.headers.get( "content-encoding" ) == "gzip":
-            htmlGzippedData = resp.read()
-            stringIO        = StringIO.StringIO( htmlGzippedData )
-            gzipper         = gzip.GzipFile( fileobj = stringIO )
-            htmlData        = gzipper.read()
-    else :
-            htmlData = resp.read()
- 
-    resp.close()
-     
-    # Return html
-    return htmlData
+    ]
 
-def openUrlWithCookie(url, cookie):
-    browser = setupMechanizeBrowser()
-    cj = cookielib.LWPCookieJar()
-    browser.set_cookiejar(cj)
-    cj.load(cookie , ignore_discard=True)#, ignore_expires=True)
-    print cj
-    opener = mechanize.build_opener(HTTPCookieProcessor(cj))
-    mechanize.install_opener(opener)
-    response = browser.open(url)
-    print response.geturl()
-    print response.info()
-    html = response.read()
-    return html
+    #Experimental?
+    # browser.set_handle_gzip(True)
+    browser.set_handle_redirect(True)
+    browser.set_handle_referer(True)
+    browser.set_handle_robots(False)
+    browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time = 1)
+    
+    if not cookie is None:
+	cj = cookielib.LWPCookieJar()
+	browser.set_cookiejar(cj)
+	opener = mechanize.build_opener(HTTPCookieProcessor(cj))
+	mechanize.install_opener(opener)
+	
+	# trying to login, no cookie, must return browser so it can follow the
+	# login url
+	if login is True:
+		browser.open(url)
+		return browser
+		
+	# can't set to expire, can't read when this particular cookie expires
+	cj.load(cookie , ignore_discard=True)
+
+    return browser.open(url).read()
+
 
 def login(cookiePath, username, password, signinUrl):
     print cookiePath
@@ -71,12 +57,7 @@ def login(cookiePath, username, password, signinUrl):
     except:
         pass
 
-    browser = setupMechanizeBrowser()
-    cookies = cookielib.LWPCookieJar()
-    browser.set_cookiejar(cookies)
-    opener = mechanize.build_opener(HTTPCookieProcessor(cookies))
-    mechanize.install_opener(opener)
-    browser.open(signinUrl)
+    browser = openUrl(signinUrl, None, True)
     browser.select_form(name="do_User__eventCheckIdentification")
     browser['fields[password]'] = password
     browser['fields[email]'] = username
@@ -86,9 +67,9 @@ def login(cookiePath, username, password, signinUrl):
     print response2.geturl()
     source = response2.read()
     login = check_login(source)
-    #if login suceeded, save the cookiejar to disk
+    #if login suceeded, save the cookiejar to disk, no expiration to set
     if login == True:
-        cookies.save(cookiePath, ignore_discard=True)#, ignore_expires=True)
+        cookies.save(cookiePath, ignore_discard=True)
 
     #return whether we are logged in or not
     return login
@@ -104,27 +85,6 @@ def check_login(source):
         return True
     else:
         return False
-
-def setupMechanizeBrowser():
-    browser = mechanize.Browser()
-    browser.addheaders = [
-        ('User-Agent',
-         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0'),
-        ('Accept',
-         'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
-        ('Accept-Language', 'en-gb,en;q=0.5'),
-        ('Accept-Encoding', 'gzip,deflate'),
-        ('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'),
-        ('Keep-Alive', '115'),
-        ('DNT', '1')
-    ]
-    browser.set_handle_gzip(True)
-    browser.set_handle_redirect(True)
-    browser.set_handle_referer(True)
-    browser.set_handle_robots(False)
-    browser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(),
-                               max_time = 1)
-    return browser
 
 def convert_relative_to_absolute_url(base_url, relative_url):
     # may be unicode, need utf8 encoding

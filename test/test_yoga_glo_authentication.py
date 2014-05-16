@@ -19,7 +19,7 @@ class TestYogaGloAuthentication(object):
 	        self.addon.getAddonInfo = MagicMock(return_value="some-special-path")
 	        self.patcher = patch('yogaglo.authentication.translatePath')
 	        self.check_patcher = patch('yogaglo.authentication.check_login')
-	        self.openurl_patcher = patch('yogaglo.authentication.openUrlWithCookie')
+	        self.openurl_patcher = patch('yogaglo.authentication.openUrl')
 	        self.translate_path = self.patcher.start()
 	        self.check_login = self.check_patcher.start()
 	        self.openurl = self.openurl_patcher.start()

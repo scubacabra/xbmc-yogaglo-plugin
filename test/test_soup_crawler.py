@@ -13,14 +13,11 @@ class TestSoupCrawler(object):
     def setUp(self):
         self.crawler = SoupCrawler("http://www.yogaglo.com")
         self.patcher = patch('yogaglo.soup_crawler.openUrl')
-        self.cookie_patcher = patch('yogaglo.soup_crawler.openUrlWithCookie')
         self.mock_open_url = self.patcher.start()
-        self.mock_open_url_with_cookie = self.cookie_patcher.start()
 
     def tearDown(self):
         self.crawler = None
         self.patcher.stop()
-        self.cookie_patcher.stop()
 
     def test_teacher_image_url_no_utf_8(self):
         self.mock_open_url.return_value = readTestInput("kathryn-page.html")
@@ -151,7 +148,7 @@ class TestSoupCrawler(object):
         assert_equals(result['title'], 'Yoga for Holiday Recovery & Detox')
 
     def test_yogaglo_authorized_video_information(self):
-        self.mock_open_url_with_cookie.return_value = readTestInput(
+        self.mock_open_url.return_value = readTestInput(
             "yg-authorized-kathryn-budig-video-3085.html")
         result = self.crawler.get_yogaglo_video_information(
             "some_url", "some_cookie_path")

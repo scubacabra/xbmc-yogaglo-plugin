@@ -1,7 +1,7 @@
 import os
 from xbmc import translatePath
 
-from http import openUrlWithCookie, login, check_login
+from http import openUrl, login, check_login
 
 yg_cookie = "yogaglo-cookie.lwp"
 yg_login_url = "http://www.yogaglo.com/eventcontroler.php"
@@ -20,7 +20,7 @@ def yg_authenticate(addon):
 		return yg_login(addon, yg_cookie_path)
 
 	print "YogaGlo -- Found cookie... just trying to see if it is still a valid session"
-	yg_my_account = openUrlWithCookie(yg_my_account_url, yg_cookie_path)
+	yg_my_account = openUrl(yg_my_account_url, yg_cookie_path)
 	logged_in = check_login(yg_my_account) #RETURN
 	if not logged_in:
 		print "YogaGlo -- Cookie PHP session appears to be invalid...logging in again"

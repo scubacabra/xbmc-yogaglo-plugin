@@ -4,7 +4,7 @@ from urlparse import urljoin
 from os.path import join
 import re
 
-from http import openUrl, openUrlWithCookie, convert_relative_to_absolute_url
+from http import openUrl, convert_relative_to_absolute_url
 
 class SoupCrawler(object):
 
@@ -131,7 +131,7 @@ class SoupCrawler(object):
     # This is the authorized video page, the full length HD video
     # feeds available
     def get_yogaglo_video_information(self, url, cookie_path):
-        html = openUrlWithCookie(url, cookie_path)
+        html = openUrl(url, cookie_path)
         swf_url = re.compile(".*url: '([^']*)'").findall(html)[0]
         play_path = re.compile('url: "([^"]*)"').findall(html)[0]
         rtmp_base_url = re.compile(
