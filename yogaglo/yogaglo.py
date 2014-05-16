@@ -1,8 +1,8 @@
 from xbmc import log, LOGDEBUG, LOGNOTICE
 from xbmcaddon import Addon
 from xbmc_util import (addDirs, eod, yoga_class_list_item,
-form_plugin_url, yoga_category_menu_list_item,
-yoga_glo_index_menu_item, yoga_class_play_video)
+                       form_plugin_url, yoga_category_menu_list_item,
+                       yoga_glo_index_menu_item, yoga_class_play_video, setViewMode)
 
 from http import openUrl
 from soup_crawler import SoupCrawler
@@ -96,6 +96,7 @@ class YogaGlo:
             itemList.append((plugin_url, li, False))
 
         addDirs(self.xbmc_handle, itemList)
+        setViewMode(self.xbmc_handle, self.addon, "503")
         eod(self.xbmc_handle)
 
     # selected a class item, stream the video for this class

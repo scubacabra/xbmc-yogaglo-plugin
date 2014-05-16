@@ -1,8 +1,14 @@
+import xbmc
 from xbmcgui import ListItem
-from xbmcplugin import addDirectoryItem, addDirectoryItems, endOfDirectory, setResolvedUrl
+from xbmcplugin import addDirectoryItem, addDirectoryItems, endOfDirectory, setResolvedUrl, setContent
 from urlparse import urlparse, parse_qsl, urlsplit
 from urllib import urlencode
 from string import join
+
+def setViewMode(handle, addon, id):
+    if xbmc.getSkinDir() == 'skin.confluence':
+        setContent(handle, 'episodes')
+        xbmc.executebuiltin('Container.SetViewMode(' + id + ')')
 
 # Takes a class information dictionary and populates a list item from it
 # returns list item
