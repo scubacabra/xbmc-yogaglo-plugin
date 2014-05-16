@@ -7,13 +7,15 @@ yg_cookie = "yogaglo-cookie.lwp"
 yg_login_url = "http://www.yogaglo.com/eventcontroler.php"
 yg_signin_url = "http://www.yogaglo.com/signin.php"
 yg_my_account_url = "http://www.yogaglo.com/myaccounttoday.php"
+yg_cookie_path = ""
 
 # return is logged on or not
 def yg_authenticate(addon):
 	yg_addon_profile_path = translatePath(addon.getAddonInfo('profile'))
 	if not os.path.exists(yg_addon_profile_path):
 		os.makedirs(yg_addon_profile_path)
-		
+
+	global yg_cookie_path
 	yg_cookie_path = os.path.join(yg_addon_profile_path, yg_cookie)
 	if not os.path.isfile(yg_cookie_path):
 		print "YogaGlo -- No cookie found for %s, attempting to log on to YogaGlo with credentials" % yg_cookie_path
@@ -41,3 +43,6 @@ def yg_login(addon, yg_cookie_path):
         #TODO show error dialog
         print "YogaGlo -- One of either Username or Password is blank, cannot log on"
         return False
+
+def get_cookie_path():
+	return yg_cookie_path

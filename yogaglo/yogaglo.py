@@ -110,8 +110,7 @@ class YogaGlo:
         #logged in, get full video at highest resolution
         if self.yoga_glo_logged_in:
             video_info = self.crawler.get_yogaglo_video_information(
-                yogaglo_url, self.yoga_glo_cookie_path
-            )
+                yogaglo_url, authentication.get_cookie_path())
             yoga_class_play_video(video_info['rtmp_url'],
                                   video_info['play_path'],
                                   video_info['swf_url'], self.xbmc_handle)
