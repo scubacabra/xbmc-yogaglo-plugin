@@ -57,7 +57,7 @@ def login(cookiePath, username, password, signinUrl):
     except:
         pass
 
-    browser = openUrl(signinUrl, None, True)
+    browser = openUrl(signinUrl, cookiePath, True)
     browser.select_form(name="do_User__eventCheckIdentification")
     browser['fields[password]'] = password
     browser['fields[email]'] = username
