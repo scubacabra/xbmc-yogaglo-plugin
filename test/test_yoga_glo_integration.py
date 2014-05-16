@@ -3,15 +3,20 @@ Created on Jan 2, 2014
 
 @author: jacobono
 '''
-from nose.tools import assert_equals
 from yogaglo.yogaglo import YogaGlo
+from mock import Mock, patch
+import yogaglo.authentication
 
 # Do a full test from the plugin code.  Runs through everything, stubbing out the xbmc stuff -- so nothing to actually test -- but the code is fully run through, gauranteeing no typos in the yogaglo and xbmc_util modules.  soup_crawler module is tested fully, but the yogaglo and xbm_util need to be run through and no way to test them
 class TestYogaGloIntegration(object):
 
-    # def setUp(self):
+    def setUp(self):
+	    self.patcher = patch('yogaglo.authentication.yg_authenticate')
+	    self.authenticate = self.patcher.start()
+	    self.authenticate.return_value = True
 
-    # def tearDown(self):
+    def tearDown(self):
+	    self.patcher.stop()
 
     def test_index(self):
         yogaglo = YogaGlo("plugin://yogaglo.py", 2, {})

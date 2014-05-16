@@ -1,5 +1,5 @@
 .*project
 *.pyc
 .settings
-*.lwp
+./*.lwp
 test-bkup

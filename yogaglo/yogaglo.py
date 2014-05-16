@@ -1,19 +1,16 @@
-from xbmc import translatePath, log, LOGDEBUG, LOGNOTICE
+from xbmc import log, LOGDEBUG, LOGNOTICE
 from xbmcaddon import Addon
 from xbmc_util import (addDirs, eod, yoga_class_list_item,
 form_plugin_url, yoga_category_menu_list_item,
 yoga_glo_index_menu_item, yoga_class_play_video)
-import os
 
-from http import openUrl, openUrlWithCookie, login, check_login
+from http import openUrl
 from soup_crawler import SoupCrawler
+import authentication
 
 class YogaGlo:
     plugin_name = "plugin.video.yogaglo"
     yoga_glo_base_url = "http://www.yogaglo.com"
-    cookie_file = "yogaGloCookie.lwp"
-    yoga_glo_sign_in_url = "http://www.yogaglo.com/signin.php"
-    yoga_glo_login_url = "http://www.yogaglo.com/eventcontroler.php"
 
     def __init__(self, plugin, handle, plugin_params):
         log("YogaGlo -- args are %s, %s, %s" %
@@ -22,33 +19,8 @@ class YogaGlo:
         self.xbmc_handle = handle
         self.addon = Addon(id=self.plugin_name)
         self.yoga_glo_plugin_parameters = plugin_params
+        self.yoga_glo_logged_in = authentication.yg_authenticate(self.addon)
         self.crawler = SoupCrawler(self.yoga_glo_base_url)
-
-        # Dir where plugin settings and cache will be stored
-        self.yoga_glo_addon_profile_path = translatePath(
-            self.addon.getAddonInfo('profile')).decode('utf-8')
-
-        # TODO same, no need for decode
-        print translatePath(self.addon.getAddonInfo('profile'))
-        print self.yoga_glo_addon_profile_path
-        if not os.path.exists(self.yoga_glo_addon_profile_path):
-            os.makedirs(self.yoga_glo_addon_profile_path)
-
-        self.yoga_glo_cookie_path = os.path.join(
-            self.yoga_glo_addon_profile_path,
-            self.cookie_file)
-        if not os.path.isfile(self.yoga_glo_cookie_path):
-            print "YogaGlo -- No cookie found for %s, attempting to log on to YogaGlo with credentials" % self.yoga_glo_cookie_path
-            self.yoga_glo_logged_in = self.yogaGloLogin()
-        else:
-            print "YogaGlo -- Found cookie... just trying to see if it is still a valid session"
-            myaccount = openUrlWithCookie(
-                "http://www.yogaglo.com/myaccounttoday.php",
-                self.yoga_glo_cookie_path)
-            self.yoga_glo_logged_in = check_login(myaccount)
-            if not self.yoga_glo_logged_in:
-                print "YogaGlo -- Cookie PHP session seems invalid...logging in again"
-                self.yoga_glo_logged_in = self.yogaGloLogin()
 
     # Build plugins index page, with category selection and yoga of the day
     def index(self):
@@ -166,17 +138,3 @@ class YogaGlo:
             return
 
         self.index()
-
-    def yogaGloLogin(self):
-        username = self.addon.getSetting('username')
-        password = self.addon.getSetting('password')
-        if username and password:
-            print "YogaGlo -- found credentials for username and password, attempting to logon"
-            loggedOn = login(self.yoga_glo_cookie_path, username, password,
-                             self.yoga_glo_sign_in_url)
-            print "YogaGlo -- logon was %s", "Successful" if loggedOn else "UnSuccessful"
-            return loggedOn
-
-        #TODO show error dialog
-        print "YogaGlo -- One of either Username or Password is blank, cannot log on"
-        return False
