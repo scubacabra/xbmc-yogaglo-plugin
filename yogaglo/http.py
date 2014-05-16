@@ -4,7 +4,7 @@ from urlparse import urljoin
 import cookielib
 import mechanize
 from mechanize import HTTPCookieProcessor
-
+from xbmc import log, LOGDEBUG
 import os
 import re
 

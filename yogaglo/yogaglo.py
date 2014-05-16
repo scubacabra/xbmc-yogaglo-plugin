@@ -1,4 +1,4 @@
-from xbmc import log, LOGDEBUG, LOGNOTICE
+from xbmc import log, LOGDEBUG
 from xbmcaddon import Addon
 from xbmc_util import (addDirs, eod, yoga_class_list_item,
                        form_plugin_url, yoga_category_menu_list_item,
