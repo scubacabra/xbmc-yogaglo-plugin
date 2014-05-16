@@ -61,30 +61,29 @@ def login(cookiePath, username, password, signinUrl):
     browser.select_form(name="do_User__eventCheckIdentification")
     browser['fields[password]'] = password
     browser['fields[email]'] = username
-    #print browser.form
-    response2 = browser.submit()
-    print response2.info()
-    print response2.geturl()
-    source = response2.read()
-    login = check_login(source)
-    #if login suceeded, save the cookiejar to disk, no expiration to set
-    if login == True:
-        cookies.save(cookiePath, ignore_discard=True)
+    submit = browser.submit()
+    homepage = submit.read()
 
-    #return whether we are logged in or not
-    return login
+    #if login suceeded, save the cookiejar to disk, no expiration to set
+    if check_login(homepage) == True:
+        browser._ua_handlers['_cookies'].cookiejar.save(cookiePath, ignore_discard=True)
+        return True
+
+    # failed login
+    return False
 
 def check_login(source):
-
     #the string you will use to check if the login is successful.
     #you may want to set it to:    username     (no quotes)
     logged_in_string = 'Welcome Back'
 
     #search for the string in the html, without caring about upper or lower case
-    if re.search(logged_in_string,source,re.IGNORECASE):
-        return True
-    else:
-        return False
+    # if string is found, log in successful
+    if re.search(logged_in_string, source, re.IGNORECASE):
+	log("YogaGlo -- logged in to yogaglo!", LOGDEBUG)
+	return True
+
+    return False
 
 def convert_relative_to_absolute_url(base_url, relative_url):
     # may be unicode, need utf8 encoding
