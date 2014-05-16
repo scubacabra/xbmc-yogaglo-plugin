@@ -59,8 +59,10 @@ def login(cookiePath, username, password, signinUrl):
 
     browser = openUrl(signinUrl, cookiePath, True)
     browser.select_form(name="do_User__eventCheckIdentification")
+    browser.form.set_all_readonly(False) # yg and mechanize not playing nice, need this
     browser['fields[password]'] = password
     browser['fields[email]'] = username
+    browser['mydb_events[210]'] = 'do_User->eventSetSessionVariable' # not set right in post, forcing it now
     submit = browser.submit()
     homepage = submit.read()
 
