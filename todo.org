@@ -116,3 +116,33 @@
    CLOSED: [2014-01-26 Sun 21:27]
 ** DONE Add nose2 tests auto discover and run from command line (include xbmc stubs)
    CLOSED: [2014-01-26 Sun 21:27]
+
+* version 0.5.0
+
+** DONE openUrl and openUrlWithCookie should really be just openUrl, either overloaded, or defaulted to null for cookie, and a flag called login to return the mechanize browser
+   CLOSED: [2014-05-15 Thu 22:07]
+   
+*** DONE use mechanize instead of urllib2 to open. Even for a regular plain url open.  Just unifies it and makes it easier
+    CLOSED: [2014-05-15 Thu 22:07]
+
+*** DONE Test and make sure no failures
+    CLOSED: [2014-05-15 Thu 22:07]
+** DONE yoga glo authentication service.  decouple form yogaglo base processing
+   CLOSED: [2014-05-14 Wed 19:32]
+
+*** DONE test this authentication service.  in particular, mock out xbmc translatePath that is throwing errors from stubs, and other mocks as well
+    CLOSED: [2014-05-14 Wed 19:32]
+** DONE Mock yoga glo authentication to true so that integration tests will pass
+   CLOSED: [2014-05-14 Wed 18:11]
+
+** DONE New view for video information in gui
+   CLOSED: [2014-05-16 Fri 11:32]
+
+** DONE pydoc properly
+   CLOSED: [2014-05-21 Wed 00:18]
+
+** DONE general doc update
+   CLOSED: [2014-05-21 Wed 00:22]
+
+** DONE all print statements to xmbc logs
+   CLOSED: [2014-05-16 Fri 11:32]
