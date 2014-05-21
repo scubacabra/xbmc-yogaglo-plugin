@@ -8,7 +8,17 @@ from http import openUrl
 from soup_crawler import SoupCrawler
 import authentication
 
+"""
+YogaGlo takes care of the main proceessing, delegating to the HTML crawling logic
+and the xbmc results from that.
+
+"""
 class YogaGlo:
+    """
+    YogaGlo encapsulates this xbmc plugin, its handle, and its plugin parameters.
+    Additionally, logs on to yogaglo.com and creates the HTML crawler delegate.
+
+    """
     plugin_name = "plugin.video.yogaglo"
     yoga_glo_base_url = "http://www.yogaglo.com"
 
@@ -23,7 +33,18 @@ class YogaGlo:
         self.crawler = SoupCrawler(self.yoga_glo_base_url)
 
     # Build plugins index page, with category selection and yoga of the day
+
     def index(self):
+	"""
+	Builds the index page for the plugin containing the 5 top level categories
+	- Teacher
+	- Style
+	- Duration
+	- Level
+	- Yoga Of The Day -> homepage is crawled for this information
+	to down select from.
+	
+	"""
         yoga_glo_categories = {'Teacher': 2, 'Style': 3, 'Duration': 5,
                                'Level': 4, 'Yoga Of The Day': 1 }
         itemList = []
@@ -52,9 +73,15 @@ class YogaGlo:
         addDirs(self.xbmc_handle, itemList)
         eod(self.xbmc_handle)
 
-    # downselect an upper category to a further filtered category, need to
-    # select one level down from here to see videos
     def category_menu(self):
+	"""
+	Lists the items for the category selected from the index page.  Loads of
+	a sub menu, that unless the category is "Yoga Of The Day", requires one
+	more down select before a video can be selected.
+
+	Delegates to crawler to gather category information.
+	
+	"""
         log("yogaglo -> selecting category %s" %
             (self.yoga_glo_plugin_parameters['yogaCategory']), LOGDEBUG)
         itemList = []
@@ -74,9 +101,14 @@ class YogaGlo:
         addDirs(self.xbmc_handle, itemList)
         eod(self.xbmc_handle)
 
-    # list the items for the classes in a certain category, selecting plays the
-    # video associated with the item
     def classes_menu(self):
+	"""
+	Lists the classes available to play for this particular menu selection.
+	Selecting a list item here plays the video.
+
+	Delegates to crawler to gather information for these yoga classes.
+	
+	"""
         log("yogaglo -> getting classes for category '%s' at url '%s'" %
             (self.yoga_glo_plugin_parameters['yogaCategory'],
              self.yoga_glo_plugin_parameters['yogagloUrl']), LOGDEBUG)
@@ -99,10 +131,15 @@ class YogaGlo:
         setViewMode(self.xbmc_handle, self.addon, "503")
         eod(self.xbmc_handle)
 
-    # selected a class item, stream the video for this class
-    # preview of 5 minutes (usually), if not logged in to site
-    # otherwise, full length, HD video streamed
     def play_class_video(self):
+	"""
+	Plays the video associated with the list item selected.
+	If not logged on to yogaglo.com, will play a 5 minute preview clip.
+	Logged on gets the full length video at the highest quality.
+
+	Delegates to crawler to class video rtmp information.
+	
+	"""
         log("yogaglo -> play class at url '%s'" %
             (self.yoga_glo_plugin_parameters['yogagloUrl']), LOGDEBUG)
         yogaglo_url = self.yoga_glo_plugin_parameters['yogagloUrl']
@@ -125,6 +162,16 @@ class YogaGlo:
         return
 
     def processParameters(self):
+	"""
+	Processes the parameters passed into the plugin.  Parameters are a map.
+	Any parameter set with 'play' as a key, will play a yoga class.
+	If 'play' isn't present and 'yogagloUrl' is, the yoga classes will be
+	crawled and listed.
+	If 'yogagloUrl' isn't present and 'yogaCategory' is, the list of
+	sub-categories for a selected category will be crawled and listed.
+	If no keys are present, the index page is generated.
+	
+	"""
         if 'play' in self.yoga_glo_plugin_parameters:
             self.play_class_video()
             return

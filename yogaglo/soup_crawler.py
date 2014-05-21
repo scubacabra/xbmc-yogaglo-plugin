@@ -6,21 +6,32 @@ import re
 
 from http import openUrl, convert_relative_to_absolute_url
 
-class SoupCrawler(object):
+"""
+Crawls HTML pages for yogaglo specific information
 
-    # Yoga Glo Base Url
+"""
+class SoupCrawler(object):
+    """
+    SoupCrawler encapsluates a yoga_glo_base_url and a class description url.
+
+    """
     def __init__(self, yoga_glo_url):
         self.yoga_glo_url = yoga_glo_url
         self.classDescriptionAjaxUrl = convert_relative_to_absolute_url(
             yoga_glo_url, "/_ajax_get_class_description.php")
 
-    # Get basic navigation information, cueing off of Category
-    # inputs
-    # category [1-4]
-    # Teacher, Style, Level, Duration
-    # Returns list of dictionaries with keys (title, url, image_url*) 
-    # *optional
     def get_yoga_glo_navigation_information(self, yoga_glo_category):
+	"""
+	Gets basic yogaglo.com navigation information, cueing off of Category
+	inputs from the homepages navigation bar (Teacher, Style, Level,
+	Duration).
+
+	Returns list of dictionaries with keys
+	- title
+	- url
+	- image_url (optional)
+
+	"""
         menuList = [] # list of dictionaries to return
         yogaglo = openUrl(self.yoga_glo_url)
         soup = BeautifulSoup(''.join(yogaglo))
@@ -43,12 +54,14 @@ class SoupCrawler(object):
 
         return menuList
 
-
-        # Get teacher Image Url -- only available on teachers page
-        # need to encode url properly in case their are utf-8 characters --
-        # there are some. Noah Maze!
-        # returns full URL to teacher image
     def get_teacher_image_url(self, teacher_url):
+	"""
+	Gets a yogaglo.com teacher's image url from the teacher_url to display
+	on the screen.
+
+	Returns aboslute url to teacher image.
+
+	"""
         teacher_page = openUrl(teacher_url)
         soup = BeautifulSoup(teacher_page)
         img_section = soup.find('section', attrs={'class': 'cf'}).div.img
@@ -56,6 +69,15 @@ class SoupCrawler(object):
                                                 img_section['src'])
 
     def crawl_videos(self, url):
+	"""
+	Crawls for yogaglo.com yoga videos information from the url.
+	
+	Opens url, and crawls the HTML returned.
+
+	Returns a list of yoga videos HTML div elements, to further extract data
+	from.  If there are no div tags, None is returned.
+
+	"""
         html = openUrl(url)
         soup = BeautifulSoup(html)
         possible_video_sections = soup.findAll('section', attrs={'class':'cf'})
@@ -66,6 +88,13 @@ class SoupCrawler(object):
                 return yoga_glo_classes_divs
 
     def get_classes(self, url):
+	"""
+	Gets the yogaglo.com yoga classes information from the HTML div tags
+	present on the page.
+
+	Returns a list of dictionaries with class information
+
+	"""
         classes = [] # return array of dictionaries
         video_divs = self.crawl_videos(url)
         for video_div in video_divs:
@@ -82,13 +111,15 @@ class SoupCrawler(object):
 
         return classes
 
-    # Get the class description key information from the ajax request
-    # not really formed well, but this is how they get it in their main pages
-    # -- I must comply
-    # input -- the class ID from yogaGlo designation
-    # return a dictionary of important fields
-    # title, secondLabel, plot, style, level, teacher
     def get_yoga_class_description(self, class_id):
+	"""
+	Gets the class description for class_id from the ajax request on the
+	site. I wish this was better formed HTML, but this is what you get --
+	must comply.
+
+	Returns a dictionary with class information.
+
+	"""
         # AJAX query params to get description html
         query = urlencode({ 'id' : class_id, 't': 0 })
         url = urljoin(self.classDescriptionAjaxUrl, "?" + query)
@@ -124,13 +155,18 @@ class SoupCrawler(object):
                 'level' : level,
                 'teacher' : teacher }
 
-    # Get the yoga class video rtmp_url, swf_url, and play_path
-    # rtmp_url is just the rtmp_url + play_path
-    # from the javascript inside the actual yoga class html page
-    # inputs -- class page url, and cookie path
-    # This is the authorized video page, the full length HD video
-    # feeds available
     def get_yogaglo_video_information(self, url, cookie_path):
+	"""
+	Gets the yogaglo.com video information from the url for streaming in the
+	plugin (rtmp url, swf url, play path) from the javascript inside the
+	sites page.
+
+	This is the authorized video information (using a cookie), full length
+	highest quality video available.
+
+	Returns a dictionary of video information.
+
+	"""
         html = openUrl(url, cookie_path)
         swf_url = re.compile(".*url: '([^']*)'").findall(html)[0]
         play_path = re.compile('url: "([^"]*)"').findall(html)[0]
@@ -141,11 +177,17 @@ class SoupCrawler(object):
         return {'swf_url': swf_url, 'rtmp_url': rtmp_url,
                 'play_path': play_path}
 
-    # Get the yoga class video rtmp_url, swf_url, and play_path
-    # from the javascript inside the actual yoga class html page
-    # inputs -- class page url, and cookie path
-    # This is the un-authorized video page, the 5-minute preview feed available
     def get_yogaglo_preview_video_information(self, url):
+	"""
+	Gets the yogaglo.com video information from the url for streaming in the
+	plugin (rtmp url, swf url, play path) from the javascript inside the
+	sites page.
+
+	This is the un-authorized video page, the 5-minute preview feed available.
+
+	Returns a dictionary of video information.
+
+	"""
         html = openUrl(url)
         play_path = re.compile("url: '(mp4[^']*)'").findall(html)[0]
         swf_url = re.compile("url:\s+'([^mp4]+[^']*)'").findall(html)[0]
@@ -156,9 +198,13 @@ class SoupCrawler(object):
         return {'swf_url': swf_url, 'rtmp_url': rtmp_url,
                 'play_path': play_path}
 
-    #Get yoga-of-the-day title and info
-    # return dictionary with {title, information}
     def get_yoga_of_the_day_title_and_info(self):
+	"""
+	Gets the yogaglo.com "Yoga of the Day" video information from the homepage.
+
+	Returns a dictionary of yoga of the day information.
+
+	"""
         url = openUrl(self.yoga_glo_url)
         yotd = BeautifulSoup(url)
         yotd_section = yotd.find('section', attrs={'class': 'home_vids'})

@@ -3,14 +3,25 @@ from xbmc import translatePath
 from xbmc import log, LOGDEBUG
 from http import openUrl, login, check_login
 
+"""
+Handles the authentication for yogaglo.com.
+
+Keeps track of the cookie path, and uses the cookie if present and still valid,
+otherwise performs another logon.
+
+"""
 yg_cookie = "yogaglo-cookie.lwp"
 yg_login_url = "http://www.yogaglo.com/eventcontroler.php"
 yg_signin_url = "http://www.yogaglo.com/signin.php"
 yg_my_account_url = "http://www.yogaglo.com/myaccounttoday.php"
 yg_cookie_path = ""
 
-# return is logged on or not
 def yg_authenticate(addon):
+	"""
+	Authenticates a user into yogaglo.com.
+	Boolean return of success(true)/failure(false) of log on.
+
+	"""
 	yg_addon_profile_path = translatePath(addon.getAddonInfo('profile'))
 	if not os.path.exists(yg_addon_profile_path):
 		os.makedirs(yg_addon_profile_path)
@@ -33,6 +44,13 @@ def yg_authenticate(addon):
 		
 # attempt to log on, return boolean for success/failure
 def yg_login(addon, yg_cookie_path):
+	"""
+	Logs on to yogaglo through credentials supplied by user in the plugin
+	configuration.
+
+	Returns a boolean of success(true)/failure(false) to log on.
+	
+	"""
 	username = addon.getSetting('username')
 	password = addon.getSetting('password')
 	if username and password:
@@ -48,4 +66,8 @@ def yg_login(addon, yg_cookie_path):
         return False
 
 def get_cookie_path():
+	"""
+	Returns yogaglo cookie path in the plugins profile directory.
+
+	"""
 	return yg_cookie_path

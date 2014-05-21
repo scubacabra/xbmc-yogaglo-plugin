@@ -7,7 +7,27 @@ from xbmc import log, LOGDEBUG
 import os
 import re
 
+"""
+Utiltiy http handling.  Opens a url with Mechanize, fills in log in credentials
+through form.  Checks for successful login and resolves relative urls to
+absolute ones.
+
+"""
+
 def openUrl(url, cookie=None, login=False):
+    """
+    Opens a given url through mechanize. 
+
+    If there is no cookie (string path) passed in or if there is a cooke path
+    passed in but the login parameter is False (signifying to open the url with
+    cookie saved in the cookie path), the html from the opened url is returned
+    as a string.
+
+    If a cookie path is passed in and the login parameter is True, then the
+    Mechanize.Broswer object is returned to perform a yogaglo login through
+    a form submission.
+
+    """
     browser = mechanize.Browser()
     browser.addheaders = [
         ('User-Agent',
@@ -47,8 +67,19 @@ def openUrl(url, cookie=None, login=False):
 
 
 def login(cookiePath, username, password, signinUrl):
-    #delete any old version of the cookie file
-    if os.path.exists(cookiePath):
+    """
+    Logs in to yogaglo.com with credentials username and password through the
+    url signinUrl, saving the return cookie to cookiePath.
+
+    Returns a boolean of True(success)/False(failed) log on to the site.
+
+    NOTE:
+    Mechanize wasn't posting the hidden form field right as of 5/15/2014, so I
+    had to un-hide all form fields and manually set it to the correct value the
+    PHP controller on the server is expecting, or else it wouldn't log on at all.
+
+    """
+    if os.path.exists(cookiePath): #delete any old version of the cookie file
 	log("cookie %s exists, deleting to aquire new cookie" % (cookiePath), LOGDEBUG)
         os.remove(cookiePath)
 
@@ -70,8 +101,15 @@ def login(cookiePath, username, password, signinUrl):
     return False
 
 def check_login(source):
-    #the string you will use to check if the login is successful.
-    #you may want to set it to:    username     (no quotes)
+    """
+    Checks for a successful logon to yogaglo.com by checking the HTML source for
+    a particular string.  In this case, it is "Welcome Back".  For the yogaglo
+    site, the string "Welcome, Guest" will be present if the credentials are
+    wrong or missing.
+
+    Returns a boolean of True(success)/False(failed) log on to the site.
+
+    """
     logged_in_string = 'Welcome Back'
 
     #search for the string in the html, without caring about upper or lower case
@@ -83,10 +121,18 @@ def check_login(source):
     return False
 
 def convert_relative_to_absolute_url(base_url, relative_url):
-    # may be unicode, need utf8 encoding
+    """
+    Converts a relative_url to an aboslute one based on the yogaglo.com
+    base_url.
+
+    Returns the absolute url.
+
+    relative_url may be unicode, so convert all to utf-8
+    relative_url may have percent encoded portions, so use urlib2's quote method
+    to make sure this is a url then can be opened by mechanize.
+
+    """
     utf8_relative_url = relative_url.encode('utf-8')
-    # percent encode relative url portion, it may have utf8 characters
-    # open url can't read those
     url_encoded_relative_url = urllib2.quote(utf8_relative_url)
     return urljoin(base_url, url_encoded_relative_url)
 
