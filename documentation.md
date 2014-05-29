@@ -1,7 +1,3 @@
-# Some documentation
-
-Just trying to get yogaglo videos on xbmc.
-
 ## Categories for finding videos
 
 Per the yg site, their are 4 categories on their homepage navigation banner.
