@@ -1,2 +1,5 @@
+0.5.1
+- cleaning up Licence and images for plugin submission
+
 0.5
-- First cut at the plugin, testing on Frodo
+- First cut at the plugin, tested on Frodo
