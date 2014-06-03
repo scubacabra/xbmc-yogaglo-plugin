@@ -32,14 +32,15 @@ class TestYogaGloAuthentication(object):
 	@patch('yogaglo.authentication.login')
 	def test_no_cookie_no_login_ever(self, mock_login):
 		mock_login.return_value = False
-		self.translate_path.return_value = os.getcwd()
+		self.translate_path.return_value = os.path.abspath(os.curdir)
 		result = yg_authenticate(self.addon)
 		assert_equals(result, False)
 	
 	def test_found_cookie_still_valid(self):
 		self.check_login.return_value = True
 		self.translate_path.return_value = os.path.join(
-			os.getcwd(),"test/resources")
+			os.path.abspath(os.curdir),
+			"test/resources")
 		result = yg_authenticate(self.addon)
 		assert_equals(result, True)
 
@@ -48,7 +49,8 @@ class TestYogaGloAuthentication(object):
 		mock_login.return_value = False
 		self.check_login.return_value = False
 		self.translate_path.return_value = os.path.join(
-			os.getcwd(),"test/resources")
+			os.path.abspath(os.curdir),
+			"test/resources")
 		result = yg_authenticate(self.addon)
 		assert_equals(result, False)
 		
