@@ -19,9 +19,9 @@
                 <description lang="en">
 		  Play full-length yoga videos from YogaGlo, provided you have an account with them.
                 </description>
-                <website>https://www.github.com/jacobono/plugin.video.yogaglo.git</website>
+                <website>http://www.yogaglo.com</website>
                 <source>https://www.github.com/jacobono/plugin.video.yogaglo.git</source>
                 <email>daniel.j.mijares@gmail.com</email>
-                <forum></forum>
+                <forum>http://forum.xbmc.org/forumdisplay.php?fid=154</forum>
         </extension>
 </addon>
