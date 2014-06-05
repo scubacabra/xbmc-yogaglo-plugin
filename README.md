@@ -1,8 +1,8 @@
 plugin.video.yogaglo
 ====================
 
-[![Build Status](https://drone.io/github.com/jacobono/plugin.video.yogaglo/status.png)]
-(https://drone.io/github.com/jacobono/plugin.video.yogaglo/latest)
+[![Build Status](https://drone.io/github.com/jacobono/xbmc-yogaglo-plugin/status.png)]
+(https://drone.io/github.com/jacobono/xbmc-yogaglo-plugin/latest)
 
 [YogaGlo](http://www.yogaglo.com) plugin for XBMC -- just trying to
 get yogaglo videos on xbmc.
