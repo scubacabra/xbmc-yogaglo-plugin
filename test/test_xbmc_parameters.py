@@ -25,22 +25,22 @@ class TestXBMCParameters(object):
         assert_equals(result, {'yoga_category': '2'})
 
     def test_parameters_yoga_category_and_url(self):
-        query = {'yoga_category': 2, 'yoga_glo_url': 'http://www.yogaglo.com'}
+        query = {'yoga_category': 2, 'yoga_glo_url': 'http://classic.yogaglo.com'}
         url = self.plugin_url + urlencode(query)
         result = get_yoga_glo_input_parameters(url)
         assert_equals(result, {'yoga_category': '2',
-                               'yoga_glo_url': 'http://www.yogaglo.com'})
+                               'yoga_glo_url': 'http://classic.yogaglo.com'})
 
     def test_parameters_yoga_category_url_play(self):
-        query = {'yoga_category': 2, 'yoga_glo_url': 'http://www.yogaglo.com',
+        query = {'yoga_category': 2, 'yoga_glo_url': 'http://classic.yogaglo.com',
                  'play': 1}
         url = self.plugin_url + urlencode(query)
         result = get_yoga_glo_input_parameters(url)
         assert_equals(result, {'yoga_category': '2', 'yoga_glo_url':
-                               'http://www.yogaglo.com','play': '1'})
+                               'http://classic.yogaglo.com','play': '1'})
 
     def test_parameters_yoga_category_url_utf8(self):
-        yg_url = 'http://www.yogaglo.com/online-class-194-by-Noah-Maz%C3%A9-on-Anusara.html'
+        yg_url = 'http://classic.yogaglo.com/online-class-194-by-Noah-Maz%C3%A9-on-Anusara.html'
         query = {'yoga_category': 2, 'yoga_glo_url': yg_url, 'play': 1}
         url = self.plugin_url + urlencode(query)
         result = get_yoga_glo_input_parameters(url)

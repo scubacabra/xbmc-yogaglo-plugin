@@ -11,7 +11,7 @@ from nose.tools import assert_equals
 class TestSoupCrawler(object):
 
     def setUp(self):
-        self.crawler = SoupCrawler("http://www.yogaglo.com")
+        self.crawler = SoupCrawler("http://classic.yogaglo.com")
         self.patcher = patch('yogaglo.soup_crawler.openUrl')
         self.mock_open_url = self.patcher.start()
 
@@ -22,16 +22,16 @@ class TestSoupCrawler(object):
     def test_teacher_image_url_no_utf_8(self):
         self.mock_open_url.return_value = readTestInput("kathryn-page.html")
         result = self.crawler.get_teacher_image_url(
-            "http://www.yogaglo.com/teacher-37-Kathryn-Budig.html")
+            "http://classic.yogaglo.com/teacher-37-Kathryn-Budig.html")
         assert_equals(result,
-                      "http://www.yogaglo.com/dbimage/Kathryn_Bio_Pic.jpg")
+                      "http://classic.yogaglo.com/dbimage/Kathryn_Bio_Pic.jpg")
 
     def test_teacher_image_url_utf_8_Noah_Maze(self):
         self.mock_open_url.return_value = readTestInput("noah-page.html")
         result = self.crawler.get_teacher_image_url(
-            "http://www.yogaglo.com/teacher-4-Noah-Maz%C3%A9.html")
+            "http://classic.yogaglo.com/teacher-4-Noah-Maz%C3%A9.html")
         assert_equals(result,
-                      "http://www.yogaglo.com/dbimage/Noah_bio.jpg")
+                      "http://classic.yogaglo.com/dbimage/Noah_bio.jpg")
 
     def test_get_teacher_name_and_url_no_utf_8(self):
         self.mock_open_url.return_value = readTestInput(
@@ -41,7 +41,7 @@ class TestSoupCrawler(object):
         result = self.crawler.get_yoga_glo_navigation_information("2")[0]
         assert_equals(result['title'], "Kathryn Budig")
         assert_equals(result['url'],
-                      "http://www.yogaglo.com/teacher-37-Kathryn-Budig.html")
+                      "http://classic.yogaglo.com/teacher-37-Kathryn-Budig.html")
         assert_equals(result['image_url'], "something")
 
     def test_get_teacher_name_and_url_utf_8_Noah_Maze(self):
@@ -52,7 +52,7 @@ class TestSoupCrawler(object):
         result = self.crawler.get_yoga_glo_navigation_information("2")[0]
         assert_equals(result['title'], u"Noah Maz\xe9")
         assert_equals(result['url'],
-                      "http://www.yogaglo.com/teacher-4-Noah-Maz%C3%A9.html")
+                      "http://classic.yogaglo.com/teacher-4-Noah-Maz%C3%A9.html")
         assert_equals(result['image_url'], "something")
 
     def test_class_description_no_utf_8(self): 
@@ -103,7 +103,7 @@ class TestSoupCrawler(object):
         self.crawler.get_yoga_class_description = Mock(return_value={})
         result = self.crawler.get_classes("doesntmatter")[0]
         picUrl = "http://d3sywv2955jo7z.cloudfront.net/8_12_09_NM_thumb.jpg"
-        classUrl = ("http://www.yogaglo.com/online-class-194-by-Noah-Maz%C3%A9"
+        classUrl = ("http://classic.yogaglo.com/online-class-194-by-Noah-Maz%C3%A9"
                     "-on-Anusara.html")
         assert_equals(result['coverPicUrl'], picUrl)
         assert_equals(result['url'], classUrl)
@@ -114,7 +114,7 @@ class TestSoupCrawler(object):
             "yg-yogaoftheday-holiday-recovery.html")
         #Mock return doesn't matter here
         self.crawler.get_yoga_class_description = Mock(return_value={})
-        result = self.crawler.get_classes("http://www.yogaglo.com/")
+        result = self.crawler.get_classes("http://classic.yogaglo.com/")
         assert_equals(len(result), 6)
 
     def test_yogaoftheday(self):
@@ -124,7 +124,7 @@ class TestSoupCrawler(object):
             "yghomepage-noah-only-teacher.html")
         #Mock doesn't matter here
         self.crawler.get_yoga_class_description = Mock(return_value={})
-        result = self.crawler.get_classes("http://www.yogaglo.com")
+        result = self.crawler.get_classes("http://classic.yogaglo.com")
         assert_equals(len(result), 6)
 
     def test_yoga_of_the_day_title_info(self):
