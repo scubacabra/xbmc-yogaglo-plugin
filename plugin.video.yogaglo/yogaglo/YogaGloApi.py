@@ -1,4 +1,3 @@
-from xbmcswift2 import xbmc
 from xbmcswift2 import xbmcgui
 from YogaGloCore import YogaGloCore
 from BeautifulSoup import BeautifulSoup
@@ -98,11 +97,10 @@ class YogaGloApi(YogaGloCore):
 
         email = self.plugin._addon.getSetting('email')
         password = self.plugin._addon.getSetting('password')
-        xbmc.log("yogaglo -> logging on with email '%s' and password '%s'" %
-                 (email, password), xbmc.LOGDEBUG)
+        self.plugin.log.debug("yogaglo -> logging on with email '%s' and password '%s'" % (email, password))
 
         if not email or not password:
-            xbmc.log("yogaglo -> credentials look empty!", xbmc.LOGDEBUG)
+            self.plugin.log.debug("yogaglo -> credentials look empty!")
             self.dialog.notification('Yogaglo', 'Credentials appear empty!',
                                      xbmcgui.NOTIFICAITON_INFO, 5000, True)
             return
@@ -119,10 +117,9 @@ class YogaGloApi(YogaGloCore):
             soup = BeautifulSoup(response.text)
             x_auth_token = soup.find(id='user')['data-access_token']
             self._save_x_authenicaiton_token(x_auth_token)
-            xbmc.log("yogaglo -> successful login!", xbmc.LOGDEBUG)
+            self.plugin.log.debug("yogaglo -> successful login!")
         else:
-            xbmc.log("yogaglo -> couldn't login, bad credentials!",
-                     xbmc.LOGDEBUG)
+            self.plugin.log.debug("yogaglo -> couldn't login, bad credentials!")
             self.dialog.notification(
                 'Yogaglo', 'Could not log in due to incorrect credentials!',
                 xbmcgui.NOTIFICAITON_INFO, 5000, True)
