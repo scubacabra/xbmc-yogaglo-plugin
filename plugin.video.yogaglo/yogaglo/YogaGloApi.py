@@ -102,7 +102,7 @@ class YogaGloApi(YogaGloCore):
         if not email or not password:
             self.plugin.log.debug("yogaglo -> credentials look empty!")
             self.dialog.notification('Yogaglo', 'Credentials appear empty!',
-                                     xbmcgui.NOTIFICAITON_INFO, 5000, True)
+                                     xbmcgui.NOTIFICATION_INFO, 5000, True)
             return
 
         # login process commences
@@ -122,4 +122,4 @@ class YogaGloApi(YogaGloCore):
             self.plugin.log.debug("yogaglo -> couldn't login, bad credentials!")
             self.dialog.notification(
                 'Yogaglo', 'Could not log in due to incorrect credentials!',
-                xbmcgui.NOTIFICAITON_INFO, 5000, True)
+                xbmcgui.NOTIFICATION_INFO, 5000, True)
