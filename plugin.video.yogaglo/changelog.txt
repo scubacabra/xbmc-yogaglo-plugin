@@ -1,3 +1,11 @@
+0.6
+- New YogaGlo api is all javascript generated.  Using api, to get video information, not really scraping with BeautifulSoup anymore -- save to find an x-auth-token
+- using xbmc swift2
+- using requests
+- easier to get into 'my practice' and 'history' etc.
+- lost the ability to filter on 'teacher', 'style' etc. like in classic yogaglo
+- only way to filter on teachers is to follow them and they get listed in following
+
 0.5.2
 - xbmc official submission changes
 - plugin and test directory are now siblings instead of parent -> child
