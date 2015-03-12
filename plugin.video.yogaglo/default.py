@@ -63,3 +63,6 @@ def following(url):
 
     items.extend(following)
     return items
+
+if __name__ == '__main__':
+    plugin.run()
