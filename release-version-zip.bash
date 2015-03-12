@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="0.5"
+version="0.6"
 zipName="plugin.video.yogaglo-$version.zip"
 xbmc_plugin_name="plugin.video.yogaglo"
 
