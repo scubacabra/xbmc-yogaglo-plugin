@@ -12,7 +12,7 @@ plugin = Plugin()
 @plugin.route('/')
 def index():
     items = [
-        {'label': 'My Pratice',
+        {'label': 'My Practice',
          'path': plugin.url_for('show_mypractice', url=yg_apis['queues'])},
         {'label': 'Following',
          'path': plugin.url_for('following', url=yg_apis['followupteachers'])},
