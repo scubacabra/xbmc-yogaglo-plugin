@@ -142,7 +142,36 @@
    CLOSED: [2014-05-21 Wed 00:18]
 
 ** DONE general doc update
-   CLOSED: [2014-05-21 Wed 00:22]
+   CLOSED: 2014-05-21 Wed 00:22
 
 ** DONE all print statements to xmbc logs
-   CLOSED: [2014-05-16 Fri 11:32]
+   CLOSED: 2014-05-16 Fri 11:32
+* version 0.6.0
+** new yogaglo site is pure javascript based need to use api to get
+- this means that the html returned is an empty shell that java script fills out
+and when i get a return it is the empty shell
+   CLOSED: [2015-03-12 Thu 15:05]
+*** DONE my practice videos that ive added
+    CLOSED: [2015-03-12 Thu 15:05]
+*** DONE my teachers i'm following
+    CLOSED: [2015-03-12 Thu 15:05]
+*** DONE my teachers videos i'm following
+    CLOSED: [2015-03-12 Thu 15:05]
+*** DONE my history
+    CLOSED: [2015-03-12 Thu 15:05]
+*** TODO Save the x-authentication-token off so don't have to log in all the time.
+** TODO Can find more videos with the start and limit params!
+** TODO can't filter the site the old way, the load up a javascript file 
+with a map of everything in the site and run off of that.
+from this url 'https://www.yogaglo.com/proxy/v1/bulk-js?v=1.2.6'
+it passes a version number, that they definitely update every so often.
+could grab the number from the login html and use it there.
+
+*** The file is so big, I can't even read it in one shot.
+I thought about reading it and pickle-ing it so I could read it all back in 
+with json.load but it is too big for requests to give me something through
+response.text.  Maybe there is a way to chunk it, but still.
+It isn't a json map in string form, it is a js variable and I have to format the string
+to get the json map in string form.  Possible, but not right now.
+*** I would have to use this to filter by teacher, level, duration, style etc.
+*** The only way to currently filter by teacher is to make sure you are following them
