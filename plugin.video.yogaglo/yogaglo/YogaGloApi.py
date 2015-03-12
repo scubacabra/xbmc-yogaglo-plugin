@@ -11,7 +11,8 @@ class YogaGloApi(YogaGloCore):
         'login': 'https://www.yogaglo.com/login',
         'mypractice': 'https://www.yogaglo.com/mypractice',
         'cloud_images': 'https://d23upc69c85y6r.cloudfront.net/300/',
-        'cloud_thumbs': 'https://d3sywv2955jo7z.cloudfront.net/'
+        'cloud_thumbs': 'https://d3sywv2955jo7z.cloudfront.net/',
+        'teacher_avatars': 'https://s3.amazonaws.com/yg-app-prod-assets/1.2.6/img/teachers/'
     }
 
     def __init__(self, plugin):
@@ -46,10 +47,13 @@ class YogaGloApi(YogaGloCore):
         response = self.session.get(url, headers=self.headers, params=payload)
         items = []
         for t in response.json()['followupteacher']:
-            item = {'label': ' '.join([t[key] for key in ['first_name',
-                                                          'last_name']]),
-                    'path': t['idteacher'],
-                    'icon': t['picture']}
+            item = {
+                'label': ' '.join([t[key] for key in ['first_name',
+                                                      'last_name']]),
+                'path': t['idteacher'],
+                'icon': urlparse.urljoin(self.yg_urls['teacher_avatars'],
+                                         t['idteacher'] + '-avatar.jpg')
+            }
             items.append(item)
 
         return items
