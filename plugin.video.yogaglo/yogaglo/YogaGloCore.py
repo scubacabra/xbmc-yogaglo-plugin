@@ -2,7 +2,7 @@ import cookielib
 import requests
 import os
 import pickle
-
+from xbmcswift2 import xbmc
 
 class YogaGloCore:
     """
